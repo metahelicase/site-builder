@@ -22,5 +22,11 @@ pluginBundle {
     description = 'DSL for building static html pages with composable modules'
 
     plugins {
+        site {
+            id = 'org.metahelicase.site-builder'
+            displayName = 'Gradle Site Builder Plugin'
+            tags = ['static', 'site', 'html', 'builder', 'generator', 'template']
+            version = project.version
+        }
     }
 }
