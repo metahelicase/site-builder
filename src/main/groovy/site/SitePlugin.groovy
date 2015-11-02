@@ -11,5 +11,6 @@ class SitePlugin implements Plugin {
 
     def void apply(project) {
         project.task('site', type: Site)
+        project.task('siteResources', type: SiteResources)
     }
 }
