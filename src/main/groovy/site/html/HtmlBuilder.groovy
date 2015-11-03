@@ -17,6 +17,10 @@ class HtmlBuilder extends BuilderSupport {
 
     HtmlBuilder(int indentation = 4) { this(System.out, indentation) }
 
+    void $(extend) {
+        extend this
+    }
+
     Tag createNode(name) {
         [name: name]
     }
@@ -43,6 +47,7 @@ class HtmlBuilder extends BuilderSupport {
     }
 
     private void format(node) {
+        escape node
         indent node
         open node
         if (node.value != null) {
@@ -69,5 +74,9 @@ class HtmlBuilder extends BuilderSupport {
 
     private void indent(node) {
         out.print ' ' * node.indentation
+    }
+
+    private void escape(node) {
+        if (node.name.startsWith('$')) { node.name = node.name.substring 1 }
     }
 }

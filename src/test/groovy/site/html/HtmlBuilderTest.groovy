@@ -83,4 +83,20 @@ class HtmlBuilderTest {
         }
         assertEquals('<tag>\n  <child>\n    <grandchild>\n  </child>\n</tag>\n', out.toString())
     }
+
+    @Test
+    void canApplyBuilderFunctor() {
+        document.with {
+            $ { it.tag() }
+        }
+        assertEquals('<tag>\n', out.toString())
+    }
+
+    @Test
+    void tagNamesStartingWithTheDollarSignAreEscaped() {
+        document.with {
+            $tag()
+        }
+        assertEquals('<tag>\n', out.toString())
+    }
 }
