@@ -2,11 +2,20 @@ package site.html
 
 class HtmlBuilder extends BuilderSupport {
 
-    private PrintWriter out;
+    private final PrintWriter out
+    final int indentation
 
-    HtmlBuilder(Writer out) { this.out = new PrintWriter(out) }
-    HtmlBuilder(OutputStream out) { this.out = new PrintWriter(out) }
-    HtmlBuilder() { this(System.out) }
+    HtmlBuilder(Writer out, int indentation = 4) {
+        this.out = new PrintWriter(out)
+        this.indentation = indentation
+    }
+
+    HtmlBuilder(OutputStream out, int indentation = 4) {
+        this.out = new PrintWriter(out)
+        this.indentation = indentation
+    }
+
+    HtmlBuilder(int indentation = 4) { this(System.out, indentation) }
 
     Tag createNode(name) {
         [name: name]
@@ -26,6 +35,7 @@ class HtmlBuilder extends BuilderSupport {
 
     void setParent(parent, child) {
         parent.children << child
+        child.indentation = parent.indentation + indentation
     }
 
     void nodeCompleted(parent, node) {
@@ -33,6 +43,7 @@ class HtmlBuilder extends BuilderSupport {
     }
 
     private void format(node) {
+        indent node
         open node
         if (node.value != null) {
             out.print node.value
@@ -40,6 +51,7 @@ class HtmlBuilder extends BuilderSupport {
         } else if (node.children) {
             out.println()
             node.children.each { format it }
+            indent node
             close node
         }
         out.println()
@@ -53,5 +65,9 @@ class HtmlBuilder extends BuilderSupport {
 
     private void close(node) {
         out.print "</$node.name>"
+    }
+
+    private void indent(node) {
+        out.print ' ' * node.indentation
     }
 }

@@ -6,7 +6,7 @@ import static org.junit.Assert.*
 class HtmlBuilderTest {
 
     StringWriter out = new StringWriter()
-    HtmlBuilder document = new HtmlBuilder(out)
+    HtmlBuilder document = new HtmlBuilder(out, 0)
 
     @Test
     void canGenerateAnEmptyDocument() {
@@ -70,5 +70,17 @@ class HtmlBuilderTest {
             }
         }
         assertEquals('<tag>\n<child>\n</tag>\n', out.toString())
+    }
+
+    @Test
+    void canGenerateTagWithChildrenThatAreIndented() {
+        new HtmlBuilder(out, 2).with {
+            tag {
+                child {
+                    grandchild()
+                }
+            }
+        }
+        assertEquals('<tag>\n  <child>\n    <grandchild>\n  </child>\n</tag>\n', out.toString())
     }
 }

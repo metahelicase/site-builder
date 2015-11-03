@@ -6,4 +6,5 @@ class Tag {
     Map attributes = [:]
     Object value
     List children = []
+    int indentation = 0
 }
