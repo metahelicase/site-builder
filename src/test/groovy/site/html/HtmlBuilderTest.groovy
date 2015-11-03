@@ -33,7 +33,7 @@ class HtmlBuilderTest {
     @Test
     void canGenerateTagWithAttributeFlag() {
         document.with {
-            tag(attribute: '')
+            tag(attribute: null)
         }
         assertEquals('<tag attribute>\n', out.toString())
     }
@@ -44,6 +44,22 @@ class HtmlBuilderTest {
             tag(attribute: 'value')
         }
         assertEquals('<tag attribute="value">\n', out.toString())
+    }
+
+    @Test
+    void canGenerateTagWithAttributeWithAnEmptyValue() {
+        document.with {
+            tag(attribute: '')
+        }
+        assertEquals('<tag attribute="">\n', out.toString())
+    }
+
+    @Test
+    void canGenerateTagWithAttributeWithNumericValue() {
+        document.with {
+            tag(attribute: 0)
+        }
+        assertEquals('<tag attribute="0">\n', out.toString())
     }
 
     @Test

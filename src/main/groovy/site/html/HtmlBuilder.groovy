@@ -47,7 +47,7 @@ class HtmlBuilder extends BuilderSupport {
 
     private void open(node) {
         out.print "<$node.name"
-        node.attributes.each { key, value -> out.print(value ? " $key=\"$value\"" : " $key") }
+        node.attributes.each { key, value -> out.print((value != null) ? " $key=\"$value\"" : " $key") }
         out.print '>'
     }
 
