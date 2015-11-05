@@ -103,4 +103,55 @@ class HtmlBuilderTest {
         }
         generates '<tag>\n'
     }
+
+    @Test
+    void singleLineValuesAreFormattedInline() {
+        new HtmlBuilder(out, 2).with {
+            tag 'value'
+        }
+        generates '<tag>value</tag>\n'
+    }
+
+    @Test
+    void multipleLinesValuesAreFormattedByTrimmingLinesAndAddingIndentation() {
+        new HtmlBuilder(out, 2).with {
+            tag '''multiple
+                lines
+                value'''
+        }
+        generates '<tag>\n  multiple\n  lines\n  value\n</tag>\n'
+    }
+
+    @Test
+    void firstLineOfMultipleLinesValueIsDroppedIfBlank() {
+        new HtmlBuilder(out, 2).with {
+            tag '''
+                multiple
+                lines
+                value'''
+        }
+        generates '<tag>\n  multiple\n  lines\n  value\n</tag>\n'
+    }
+
+    @Test
+    void lastLineOfMultipleLinesValueIsDroppedIfBlank() {
+        new HtmlBuilder(out, 2).with {
+            tag '''multiple
+                lines
+                value
+            '''
+        }
+        generates '<tag>\n  multiple\n  lines\n  value\n</tag>\n'
+    }
+
+    @Test
+    void internalBlankLinesOfMultipleLinesValueArePreservedButNotIndented() {
+        new HtmlBuilder(out, 2).with {
+            tag '''multiple
+                lines
+
+                value'''
+        }
+        generates '<tag>\n  multiple\n  lines\n\n  value\n</tag>\n'
+    }
 }

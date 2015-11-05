@@ -51,7 +51,7 @@ class HtmlBuilder extends BuilderSupport {
         indent node
         open node
         if (node.value != null) {
-            out.print node.value
+            formatTextOf node
             close node
         } else if (node.children) {
             out.println()
@@ -78,5 +78,30 @@ class HtmlBuilder extends BuilderSupport {
 
     private void escape(node) {
         if (node.name.startsWith('$')) { node.name = node.name.substring 1 }
+    }
+
+    private void formatTextOf(node) {
+        def text = node.value.toString()
+        if (!text.contains('\n')) {
+            out.print text
+        } else {
+            def lines = text.split('\n').collect { it.trim() }
+            if (lines.head().empty) { lines = lines.tail() }
+            if (lines.last().empty) { lines = dropLastIn lines }
+            def padding = ' ' * (node.indentation + indentation)
+            out.println()
+            lines.each { line ->
+                if (!line.empty) {
+                    out.print padding
+                    out.print line
+                }
+                out.println()
+            }
+            indent node
+        }
+    }
+
+    private static List dropLastIn(List list) {
+        list.subList(0, list.size() - 1)
     }
 }
