@@ -154,4 +154,51 @@ class HtmlBuilderTest {
         }
         generates '<tag>\n  multiple\n  lines\n\n  value\n</tag>\n'
     }
+
+    @Test
+    void underscoreFormatsASingleLineStringWithoutTag() {
+        document.with {
+            _ 'text'
+        }
+        generates 'text\n'
+    }
+
+    @Test
+    void underscoreFormatsAMultipleLinesStringWithoutTagWithIndentation() {
+        new HtmlBuilder(out, 2).with {
+            tag {
+                _ '''
+                    multiple
+                    lines
+                    text
+                '''
+            }
+        }
+        generates '<tag>\n  multiple\n  lines\n  text\n</tag>\n'
+    }
+
+    @Test
+    void underscoreDoesNotIndentBlankLines() {
+        new HtmlBuilder(out, 2).with {
+            tag {
+                _ '''
+                    multiple
+                    lines
+
+                    text
+                '''
+            }
+        }
+        generates '<tag>\n  multiple\n  lines\n\n  text\n</tag>\n'
+    }
+
+    @Test
+    void underscoreFormatsAnEmptyStringAsABlankLine() {
+        new HtmlBuilder(out, 2).with {
+            tag {
+                _ ''
+            }
+        }
+        generates '<tag>\n\n</tag>\n'
+    }
 }

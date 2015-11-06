@@ -47,6 +47,10 @@ class HtmlBuilder extends BuilderSupport {
     }
 
     private void format(node) {
+        if (node.name == '_') {
+            formatText node
+            return
+        }
         escape node
         indent node
         open node
@@ -78,6 +82,28 @@ class HtmlBuilder extends BuilderSupport {
 
     private void escape(node) {
         if (node.name.startsWith('$')) { node.name = node.name.substring 1 }
+    }
+
+    private void formatText(node) {
+        def text = node.value.toString()
+        if (text.empty) {
+            out.println()
+        } else if (!text.contains('\n')) {
+            out.print ' ' * node.indentation
+            out.println text
+        } else {
+            def lines = text.split('\n').collect { it.trim() }
+            if (lines.head().empty) { lines = lines.tail() }
+            if (lines.last().empty) { lines = dropLastIn lines }
+            def padding = ' ' * node.indentation
+            lines.each { line ->
+                if (!line.empty) {
+                    out.print padding
+                    out.print line
+                }
+                out.println()
+            }
+        }
     }
 
     private void formatTextOf(node) {
