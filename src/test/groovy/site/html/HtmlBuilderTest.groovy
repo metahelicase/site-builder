@@ -201,4 +201,71 @@ class HtmlBuilderTest {
         }
         generates '<tag>\n\n</tag>\n'
     }
+
+    @Test
+    void underscoreInlinesItsChildren() {
+        new HtmlBuilder(out, 2).with {
+            _ {
+                tag 'inlined with'
+                tag 'other tags'
+            }
+        }
+        generates '<tag>inlined with</tag><tag>other tags</tag>\n'
+    }
+
+    @Test
+    void nestedUnderscoresDoNotAddFormatting() {
+        new HtmlBuilder(out, 2).with {
+            _ {
+                tag 'inlined with'
+                _ {
+                    tag 'other tags'
+                }
+            }
+        }
+        generates '<tag>inlined with</tag><tag>other tags</tag>\n'
+    }
+
+    @Test
+    void underscoreInlinesNestedChildrenTags() {
+        new HtmlBuilder(out, 2).with {
+            _ {
+                tag {
+                    child 'inlined with'
+                    child 'children tags'
+                }
+            }
+        }
+        generates '<tag><child>inlined with</child><child>children tags</child></tag>\n'
+    }
+
+    @Test
+    void underscoreInlinesMultipleLinesText() {
+        new HtmlBuilder(out, 2).with {
+            _ {
+                _ '''
+                    multiple
+                    lines
+                    text
+                '''
+            }
+        }
+        generates 'multiple lines text\n'
+    }
+
+    @Test
+    void underscoreInlinesMultipleLinesTextDroppingEmptyLines() {
+        new HtmlBuilder(out, 2).with {
+            _ {
+                _ '''
+                    multiple
+
+                    lines
+
+                    text
+                '''
+            }
+        }
+        generates 'multiple lines text\n'
+    }
 }

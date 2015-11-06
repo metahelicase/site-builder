@@ -48,7 +48,13 @@ class HtmlBuilder extends BuilderSupport {
 
     private void format(node) {
         if (node.name == '_') {
-            formatText node
+            if (node.value != null) {
+                formatText node
+            } else {
+                indent node
+                node.children.each { formatInline it }
+                out.println()
+            }
             return
         }
         escape node
@@ -64,6 +70,23 @@ class HtmlBuilder extends BuilderSupport {
             close node
         }
         out.println()
+    }
+
+    private void formatInline(node) {
+        if (node.name == '_') {
+            if (node.value != null) { formatTextInline node.value.toString() }
+            else { node.children.each { formatInline it } }
+            return
+        }
+        escape node
+        open node
+        if (node.value != null) {
+            formatTextInline node.value.toString()
+            close node
+        } else if (node.children) {
+            node.children.each { formatInline it }
+            close node
+        }
     }
 
     private void open(node) {
@@ -102,6 +125,21 @@ class HtmlBuilder extends BuilderSupport {
                     out.print line
                 }
                 out.println()
+            }
+        }
+    }
+
+    private void formatTextInline(text) {
+        if (!text.contains('\n')) {
+            out.print text
+        } else {
+            def lines = text.split('\n').collect { it.trim() } findAll { !it.empty }
+            if (!lines.empty) {
+                out.print lines.head()
+                lines.tail().each { line ->
+                    out.print ' '
+                    out.print line
+                }
             }
         }
     }
