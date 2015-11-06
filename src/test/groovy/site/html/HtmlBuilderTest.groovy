@@ -6,7 +6,14 @@ import static org.junit.Assert.*
 class HtmlBuilderTest {
 
     StringWriter out = new StringWriter()
-    HtmlBuilder document = new HtmlBuilder(out, 0)
+    int indentation = 4
+    HtmlBuilder document = new HtmlBuilder(out, indentation)
+    String tab = ' ' * indentation
+
+    HtmlBuilderTest script(Closure script) {
+        document.with script
+        this
+    }
 
     void generates(String html) {
         assertEquals(html, out.toString())
@@ -14,158 +21,149 @@ class HtmlBuilderTest {
 
     @Test
     void canGenerateAnEmptyDocument() {
-        document.with {}
-        generates ''
+        script {
+        } generates ''
     }
 
     @Test
     void canGenerateAnEmptyTag() {
-        document.with {
+        script {
             tag()
-        }
-        generates '<tag>\n'
+        } generates '<tag>\n'
     }
 
     @Test
     void canGenerateTagWithValue() {
-        document.with {
+        script {
             tag 'value'
-        }
-        generates '<tag>value</tag>\n'
+        } generates '<tag>value</tag>\n'
     }
 
     @Test
     void canGenerateTagWithAttributeFlag() {
-        document.with {
+        script {
             tag(attribute: null)
-        }
-        generates '<tag attribute>\n'
+        } generates '<tag attribute>\n'
     }
 
     @Test
     void canGenerateTagWithAttributeNameValuePair() {
-        document.with {
+        script {
             tag(attribute: 'value')
-        }
-        generates '<tag attribute="value">\n'
+        } generates '<tag attribute="value">\n'
     }
 
     @Test
     void canGenerateTagWithAttributeWithAnEmptyValue() {
-        document.with {
+        script {
             tag(attribute: '')
-        }
-        generates '<tag attribute="">\n'
+        } generates '<tag attribute="">\n'
     }
 
     @Test
     void canGenerateTagWithAttributeWithNumericValue() {
-        document.with {
+        script {
             tag(attribute: 0)
-        }
-        generates '<tag attribute="0">\n'
+        } generates '<tag attribute="0">\n'
+    }
+
+    @Test
+    void canGenerateTagWithAttributeWithBooleanValue() {
+        script {
+            tag(attribute: true)
+        } generates '<tag attribute="true">\n'
     }
 
     @Test
     void canGenerateTagWithChild() {
-        document.with {
+        script {
             tag {
                 child()
             }
-        }
-        generates '<tag>\n<child>\n</tag>\n'
+        } generates "<tag>\n$tab<child>\n</tag>\n"
     }
 
     @Test
     void canGenerateTagWithChildrenThatAreIndented() {
-        new HtmlBuilder(out, 2).with {
+        script {
             tag {
                 child {
                     grandchild()
                 }
             }
-        }
-        generates '<tag>\n  <child>\n    <grandchild>\n  </child>\n</tag>\n'
+        } generates "<tag>\n$tab<child>\n$tab$tab<grandchild>\n$tab</child>\n</tag>\n"
     }
 
     @Test
     void canApplyBuilderFunctor() {
-        document.with {
+        script {
             $ { it.tag() }
-        }
-        generates '<tag>\n'
+        } generates '<tag>\n'
     }
 
     @Test
     void tagNamesStartingWithTheDollarSignAreEscaped() {
-        document.with {
+        script {
             $tag()
-        }
-        generates '<tag>\n'
+        } generates '<tag>\n'
     }
 
     @Test
     void singleLineValuesAreFormattedInline() {
-        new HtmlBuilder(out, 2).with {
+        script {
             tag 'value'
-        }
-        generates '<tag>value</tag>\n'
+        } generates '<tag>value</tag>\n'
     }
 
     @Test
     void multipleLinesValuesAreFormattedByTrimmingLinesAndAddingIndentation() {
-        new HtmlBuilder(out, 2).with {
+        script {
             tag '''multiple
                 lines
                 value'''
-        }
-        generates '<tag>\n  multiple\n  lines\n  value\n</tag>\n'
+        } generates "<tag>\n${tab}multiple\n${tab}lines\n${tab}value\n</tag>\n"
     }
 
     @Test
     void firstLineOfMultipleLinesValueIsDroppedIfBlank() {
-        new HtmlBuilder(out, 2).with {
+        script {
             tag '''
                 multiple
                 lines
                 value'''
-        }
-        generates '<tag>\n  multiple\n  lines\n  value\n</tag>\n'
+        } generates "<tag>\n${tab}multiple\n${tab}lines\n${tab}value\n</tag>\n"
     }
 
     @Test
     void lastLineOfMultipleLinesValueIsDroppedIfBlank() {
-        new HtmlBuilder(out, 2).with {
+        script {
             tag '''multiple
                 lines
                 value
             '''
-        }
-        generates '<tag>\n  multiple\n  lines\n  value\n</tag>\n'
+        } generates "<tag>\n${tab}multiple\n${tab}lines\n${tab}value\n</tag>\n"
     }
 
     @Test
     void internalBlankLinesOfMultipleLinesValueArePreservedButNotIndented() {
-        new HtmlBuilder(out, 2).with {
+        script {
             tag '''multiple
                 lines
 
                 value'''
-        }
-        generates '<tag>\n  multiple\n  lines\n\n  value\n</tag>\n'
+        } generates "<tag>\n${tab}multiple\n${tab}lines\n\n${tab}value\n</tag>\n"
     }
 
     @Test
-    void underscoreFormatsASingleLineStringWithoutTag() {
-        document.with {
+    void underscoreFormatsSingleLineStringsWithoutTag() {
+        script {
             _ 'text'
-        }
-        generates 'text\n'
+        } generates 'text\n'
     }
 
     @Test
-    void underscoreFormatsAMultipleLinesStringWithoutTagWithIndentation() {
-        new HtmlBuilder(out, 2).with {
+    void underscoreFormatsMultipleLinesStringsWithIndentation() {
+        script {
             tag {
                 _ '''
                     multiple
@@ -173,13 +171,12 @@ class HtmlBuilderTest {
                     text
                 '''
             }
-        }
-        generates '<tag>\n  multiple\n  lines\n  text\n</tag>\n'
+        } generates "<tag>\n${tab}multiple\n${tab}lines\n${tab}text\n</tag>\n"
     }
 
     @Test
     void underscoreDoesNotIndentBlankLines() {
-        new HtmlBuilder(out, 2).with {
+        script {
             tag {
                 _ '''
                     multiple
@@ -188,60 +185,55 @@ class HtmlBuilderTest {
                     text
                 '''
             }
-        }
-        generates '<tag>\n  multiple\n  lines\n\n  text\n</tag>\n'
+        } generates "<tag>\n${tab}multiple\n${tab}lines\n\n${tab}text\n</tag>\n"
     }
 
     @Test
     void underscoreFormatsAnEmptyStringAsABlankLine() {
-        new HtmlBuilder(out, 2).with {
+        script {
             tag {
                 _ ''
             }
-        }
-        generates '<tag>\n\n</tag>\n'
+        } generates '<tag>\n\n</tag>\n'
     }
 
     @Test
     void underscoreInlinesItsChildren() {
-        new HtmlBuilder(out, 2).with {
+        script {
             _ {
                 tag 'inlined with'
                 tag 'other tags'
             }
-        }
-        generates '<tag>inlined with</tag><tag>other tags</tag>\n'
+        } generates '<tag>inlined with</tag><tag>other tags</tag>\n'
     }
 
     @Test
     void nestedUnderscoresDoNotAddFormatting() {
-        new HtmlBuilder(out, 2).with {
+        script {
             _ {
                 tag 'inlined with'
                 _ {
                     tag 'other tags'
                 }
             }
-        }
-        generates '<tag>inlined with</tag><tag>other tags</tag>\n'
+        } generates '<tag>inlined with</tag><tag>other tags</tag>\n'
     }
 
     @Test
     void underscoreInlinesNestedChildrenTags() {
-        new HtmlBuilder(out, 2).with {
+        script {
             _ {
                 tag {
                     child 'inlined with'
                     child 'children tags'
                 }
             }
-        }
-        generates '<tag><child>inlined with</child><child>children tags</child></tag>\n'
+        } generates '<tag><child>inlined with</child><child>children tags</child></tag>\n'
     }
 
     @Test
     void underscoreInlinesMultipleLinesText() {
-        new HtmlBuilder(out, 2).with {
+        script {
             _ {
                 _ '''
                     multiple
@@ -249,13 +241,12 @@ class HtmlBuilderTest {
                     text
                 '''
             }
-        }
-        generates 'multiple lines text\n'
+        } generates 'multiple lines text\n'
     }
 
     @Test
     void underscoreInlinesMultipleLinesTextDroppingEmptyLines() {
-        new HtmlBuilder(out, 2).with {
+        script {
             _ {
                 _ '''
                     multiple
@@ -265,7 +256,6 @@ class HtmlBuilderTest {
                     text
                 '''
             }
-        }
-        generates 'multiple lines text\n'
+        } generates 'multiple lines text\n'
     }
 }
