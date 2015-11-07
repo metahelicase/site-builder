@@ -21,16 +21,20 @@ class Site extends DefaultTask {
 
     void execute(FileTreeElement script) {
         if (script.file.isDirectory()) { return }
-        def pageName = script.relativePath.toString() - '.groovy'
-        def target = project.file("$project.site.buildDir/${pageName}.html")
+        def page = script.relativePath.toString() - '.groovy' + '.html'
+        def target = project.file("$project.site.buildDir/$page")
         target.parentFile.mkdirs()
         def config = configuration()
         target.withWriter { out ->
-            def document = new HtmlBuilder(out, project.site.indentation)
-            def shell = new GroovyShell(new Binding([document: document]), config)
-            shell.evaluate("document.with { ${script.file.text} }")
+            def bindings = [
+                builder: new HtmlBuilder(out, project.site.indentation),
+                root: project.site.root,
+                page: page
+            ]
+            def shell = new GroovyShell(new Binding([site: bindings]), config)
+            shell.evaluate("site.builder.with { ${script.file.text} }")
         }
-        logger.lifecycle " >> /${pageName}.html"
+        logger.lifecycle " >> $project.site.root/$page"
     }
 
     private CompilerConfiguration configuration() {
