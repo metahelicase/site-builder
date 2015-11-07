@@ -7,7 +7,7 @@ class SiteResources extends Copy {
     SiteResources() {
         from project.site.resourcesDir
         into project.site.buildDir
-        group 'build'
+        group 'site'
         description 'Copies the site resources to the site build directory.'
     }
 }

@@ -9,7 +9,7 @@ class TgzSite extends Tar {
         from project.site.buildDir
         destinationDir = project.buildDir
         compression Compression.GZIP
-        group 'build'
-        description 'Assembles a tgz containing the built site.'
+        group 'site'
+        description 'Assembles a tgz (gzip compressed tar) archive containing the built site.'
     }
 }

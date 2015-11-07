@@ -9,7 +9,7 @@ import org.codehaus.groovy.control.CompilerConfiguration
 class Site extends DefaultTask {
 
     Site() {
-        group 'build'
+        group 'site'
         description 'Build static webpages from groovy scripts.'
     }
 
