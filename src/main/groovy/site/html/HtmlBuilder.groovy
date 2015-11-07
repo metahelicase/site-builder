@@ -39,133 +39,117 @@ class HtmlBuilder extends BuilderSupport {
 
     void setParent(parent, child) {
         parent.children << child
+        child.inline = parent.inline || parent.inlineMetatag
         child.indentation = parent.indentation + indentation
     }
 
     void nodeCompleted(parent, node) {
-        if (parent == null) { format node }
+        if (parent == null) { new TagFormatter().format node }
     }
 
-    private void format(node) {
-        if (node.name == '_') {
-            if (node.value != null) {
-                formatText node
+    private class TagFormatter {
+
+        void format(Tag tag) {
+            if (tag.textMetatag) { formatText tag }
+            else if (tag.inlineMetatag) { formatInline tag }
+            else if (tag.single) { formatSingle tag }
+            else if (tag.parent) { formatParent tag }
+            else { formatValue tag }
+        }
+
+        private void formatText(Tag tag) {
+            def text = tag.value.toString()
+            def padding = tag.inline ? ' ' : ' ' * tag.indentation
+            formatLines tag.inline, padding, collectLinesFrom(text)
+        }
+
+        private void formatInline(Tag tag) {
+            indent tag
+            tag.children.each { format it }
+            newLine tag
+        }
+
+        private void formatSingle(Tag tag) {
+            tag.escapeName()
+            indent tag
+            open tag
+            newLine tag
+        }
+
+        private void formatParent(Tag tag) {
+            tag.escapeName()
+            indent tag
+            open tag
+            newLine tag
+            tag.children.each { format it }
+            indent tag
+            close tag
+            newLine tag
+        }
+
+        private void formatValue(Tag tag) {
+            tag.escapeName()
+            indent tag
+            open tag
+            formatValueOf tag
+            close tag
+            newLine tag
+        }
+
+        private void open(Tag tag) {
+            out << '<' << tag.name
+            tag.attributes.each { key, value -> out << (value == null ? " $key" : " $key=\"$value\"") }
+            out << '>'
+        }
+
+        private void close(Tag tag) {
+            out << '</' << tag.name << '>'
+        }
+
+        private void indent(Tag tag) {
+            if (!tag.inline) { out << ' ' * tag.indentation }
+        }
+
+        private void newLine(Tag tag) {
+            if (!tag.inline) { out.newLine() }
+        }
+
+        private void formatValueOf(Tag tag) {
+            def text = tag.value.toString()
+            if (singleLine(text)) {
+                out << text
             } else {
-                indent node
-                node.children.each { formatInline it }
-                out.println()
+                def padding = tag.inline ? ' ' : ' ' * (tag.indentation + indentation)
+                newLine tag
+                formatLines tag.inline, padding, collectLinesFrom(text)
+                indent tag
             }
-            return
         }
-        escape node
-        indent node
-        open node
-        if (node.value != null) {
-            formatTextOf node
-            close node
-        } else if (node.children) {
-            out.println()
-            node.children.each { format it }
-            indent node
-            close node
+
+        private static boolean singleLine(String text) {
+            !text.contains('\n')
         }
-        out.println()
-    }
 
-    private void formatInline(node) {
-        if (node.name == '_') {
-            if (node.value != null) { formatTextInline node.value.toString() }
-            else { node.children.each { formatInline it } }
-            return
+        private void formatLines(boolean inline, String padding, List<String> lines) {
+            formatPadded(inline ? '' : padding, lines.head())
+            lines.tail().each { line ->
+                if (!inline) { out.newLine() }
+                formatPadded padding, line
+            }
+            if (!inline) { out.newLine() }
         }
-        escape node
-        open node
-        if (node.value != null) {
-            formatTextInline node.value.toString()
-            close node
-        } else if (node.children) {
-            node.children.each { formatInline it }
-            close node
+
+        private void formatPadded(String padding, String line) {
+            if (!line.empty) { out << padding << line }
         }
-    }
 
-    private void open(node) {
-        out.print "<$node.name"
-        node.attributes.each { key, value -> out.print((value != null) ? " $key=\"$value\"" : " $key") }
-        out.print '>'
-    }
-
-    private void close(node) {
-        out.print "</$node.name>"
-    }
-
-    private void indent(node) {
-        out.print ' ' * node.indentation
-    }
-
-    private void escape(node) {
-        if (node.name.startsWith('$')) { node.name = node.name.substring 1 }
-    }
-
-    private void formatText(node) {
-        def text = node.value.toString()
-        if (text.empty) {
-            out.println()
-        } else if (!text.contains('\n')) {
-            out.print ' ' * node.indentation
-            out.println text
-        } else {
-            def lines = text.split('\n').collect { it.trim() }
+        private List<String> collectLinesFrom(String text) {
+            def lines = text.split('\n')*.trim()
+            if (lines.size() == 1) { return lines }
             if (lines.head().empty) { lines = lines.tail() }
-            if (lines.last().empty) { lines = dropLastIn lines }
-            def padding = ' ' * node.indentation
-            lines.each { line ->
-                if (!line.empty) {
-                    out.print padding
-                    out.print line
-                }
-                out.println()
-            }
+            if (lines.size() == 1) { return lines }
+            if (lines.last().empty) { lines = lines.subList(0, lines.size() - 1) }
+            return lines
         }
-    }
-
-    private void formatTextInline(text) {
-        if (!text.contains('\n')) {
-            out.print text
-        } else {
-            def lines = text.split('\n').collect { it.trim() } findAll { !it.empty }
-            if (!lines.empty) {
-                out.print lines.head()
-                lines.tail().each { line ->
-                    out.print ' '
-                    out.print line
-                }
-            }
-        }
-    }
-
-    private void formatTextOf(node) {
-        def text = node.value.toString()
-        if (!text.contains('\n')) {
-            out.print text
-        } else {
-            def lines = text.split('\n').collect { it.trim() }
-            if (lines.head().empty) { lines = lines.tail() }
-            if (lines.last().empty) { lines = dropLastIn lines }
-            def padding = ' ' * (node.indentation + indentation)
-            out.println()
-            lines.each { line ->
-                if (!line.empty) {
-                    out.print padding
-                    out.print line
-                }
-                out.println()
-            }
-            indent node
-        }
-    }
-
-    private static List dropLastIn(List list) {
-        list.subList(0, list.size() - 1)
     }
 }

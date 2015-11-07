@@ -258,4 +258,26 @@ class HtmlBuilderTest {
             }
         } generates 'multiple lines text\n'
     }
+
+    @Test
+    void underscoreInlinesMultipleLinesTagValue() {
+        script {
+            _ {
+                tag '''
+                    multiple
+                    lines
+                    value
+                '''
+            }
+        } generates '<tag>multiple lines value</tag>\n'
+    }
+
+    @Test
+    void canInlineSingleLineBlankText() {
+        script {
+            _ {
+                tag tab
+            }
+        } generates "<tag>$tab</tag>\n"
+    }
 }
