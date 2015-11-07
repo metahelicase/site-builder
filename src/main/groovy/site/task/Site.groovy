@@ -24,11 +24,12 @@ class Site extends DefaultTask {
         def pageName = script.relativePath.toString() - '.groovy'
         def target = project.file("$project.site.buildDir/${pageName}.html")
         target.parentFile.mkdirs()
-        def out = new PrintWriter(new FileOutputStream(target))
-        def document = new HtmlBuilder(out, project.site.indentation)
-        def shell = new GroovyShell(new Binding([document: document]), configuration())
-        shell.evaluate("document.with { ${script.file.text} }")
-        out.flush()
+        def config = configuration()
+        target.withWriter { out ->
+            def document = new HtmlBuilder(out, project.site.indentation)
+            def shell = new GroovyShell(new Binding([document: document]), config)
+            shell.evaluate("document.with { ${script.file.text} }")
+        }
         logger.lifecycle " >> /${pageName}.html"
     }
 
