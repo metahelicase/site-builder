@@ -198,6 +198,15 @@ class HtmlBuilderTest {
     }
 
     @Test
+    void underscorePreservesBlankSpacesOnASingleBlankLine() {
+        script {
+            tag {
+                _ tab
+            }
+        } generates "<tag>\n$tab$tab\n</tag>\n"
+    }
+
+    @Test
     void underscoreInlinesItsChildren() {
         script {
             _ {

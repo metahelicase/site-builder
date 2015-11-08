@@ -59,8 +59,14 @@ class HtmlBuilder extends BuilderSupport {
 
         private void formatText(Tag tag) {
             def text = tag.value.toString()
-            def padding = tag.inline ? ' ' : ' ' * tag.indentation
-            formatLines tag.inline, padding, collectLinesFrom(text)
+            if (singleLine(text)) {
+                if (!text.empty) { indent tag }
+                out << text
+                newLine tag
+            } else {
+                def padding = tag.inline ? ' ' : ' ' * tag.indentation
+                formatLines tag.inline, padding, collectLinesFrom(text)
+            }
         }
 
         private void formatInline(Tag tag) {
