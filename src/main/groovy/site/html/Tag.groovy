@@ -5,7 +5,9 @@ class Tag {
     String name
     Map attributes = [:]
     Object value
-    List children = []
+
+    List<Tag> children = []
+
     int indentation = 0
     boolean inline = false
 
@@ -17,7 +19,7 @@ class Tag {
         name == '_' && value == null
     }
 
-    boolean isSingle() {
+    boolean isSelfClosing() {
         name != '_' && value == null && children.empty
     }
 

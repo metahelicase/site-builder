@@ -3,7 +3,7 @@ package site.html
 class HtmlBuilder extends BuilderSupport {
 
     private final PrintWriter out
-    final int indentation
+    private final int indentation
 
     HtmlBuilder(Writer out, int indentation = 4) {
         this.out = new PrintWriter(out)
@@ -52,7 +52,7 @@ class HtmlBuilder extends BuilderSupport {
         void format(Tag tag) {
             if (tag.textMetatag) { formatText tag }
             else if (tag.inlineMetatag) { formatInline tag }
-            else if (tag.single) { formatSingle tag }
+            else if (tag.selfClosing) { formatSingle tag }
             else if (tag.parent) { formatParent tag }
             else { formatValue tag }
         }
@@ -62,7 +62,7 @@ class HtmlBuilder extends BuilderSupport {
             if (singleLine(text)) {
                 if (!text.empty) { indent tag }
                 out << text
-                newLine tag
+                wrap tag
             } else {
                 def padding = tag.inline ? ' ' : ' ' * tag.indentation
                 formatLines tag.inline, padding, collectLinesFrom(text)
@@ -72,25 +72,25 @@ class HtmlBuilder extends BuilderSupport {
         private void formatInline(Tag tag) {
             indent tag
             tag.children.each { format it }
-            newLine tag
+            wrap tag
         }
 
         private void formatSingle(Tag tag) {
             tag.escapeName()
             indent tag
             open tag
-            newLine tag
+            wrap tag
         }
 
         private void formatParent(Tag tag) {
             tag.escapeName()
             indent tag
             open tag
-            newLine tag
+            wrap tag
             tag.children.each { format it }
             indent tag
             close tag
-            newLine tag
+            wrap tag
         }
 
         private void formatValue(Tag tag) {
@@ -99,7 +99,7 @@ class HtmlBuilder extends BuilderSupport {
             open tag
             formatValueOf tag
             close tag
-            newLine tag
+            wrap tag
         }
 
         private void open(Tag tag) {
@@ -116,7 +116,7 @@ class HtmlBuilder extends BuilderSupport {
             if (!tag.inline) { out << ' ' * tag.indentation }
         }
 
-        private void newLine(Tag tag) {
+        private void wrap(Tag tag) {
             if (!tag.inline) { out.newLine() }
         }
 
@@ -126,7 +126,7 @@ class HtmlBuilder extends BuilderSupport {
                 out << text
             } else {
                 def padding = tag.inline ? ' ' : ' ' * (tag.indentation + indentation)
-                newLine tag
+                wrap tag
                 formatLines tag.inline, padding, collectLinesFrom(text)
                 indent tag
             }
