@@ -34,7 +34,7 @@ class Site extends DefaultTask {
             def shell = new GroovyShell(new Binding([site: bindings]), config)
             shell.evaluate("site.builder.with { ${script.file.text} }")
         }
-        logger.lifecycle " >> $project.site.root/$page"
+        logger.lifecycle " >> $project.site.root$page"
     }
 
     private CompilerConfiguration configuration() {
