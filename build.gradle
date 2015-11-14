@@ -30,3 +30,11 @@ pluginBundle {
         }
     }
 }
+
+groovydoc {
+    overview = 'src/main/groovydoc/overview.html'
+    windowTitle = 'Site Builder'
+    link 'https://docs.oracle.com/javase/8/docs/api/', 'java.'
+    link 'http://docs.groovy-lang.org/latest/html/gapi/', 'groovy.', 'org.codehaus.groovy.'
+    link 'https://docs.gradle.org/current/javadoc/', 'org.gradle.'
+}

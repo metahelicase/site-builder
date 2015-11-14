@@ -1,0 +1,182 @@
+<style>
+    div.overview code {
+        font-size: small;
+    }
+    div.overview p,
+    div.overview li,
+    div.overview pre > code {
+        line-height: 150%;
+    }
+</style>
+<div class="overview">
+<h2>Build HTML documents with modular snippets and templates</h2>
+<p>
+    The Site Builder gradle plugin is a static site generation tool.
+    It's goal is to avoid writing HTML pages directly, but at the same time to let an high degree of site customization.
+</p>
+<h3>Project configuration</h3>
+<p>
+    The plugin has only two configurable properties, accessible through the <code>site</code> object in the <code>build.gradle</code> script.
+</p>
+<a name="configuration"></a>
+<pre><code>
+    site {
+        root '/static/blog/'    // the site deploy path on the target host, default is /
+        indentation 2           // the tab width used to indent HTML tags, default is 4 spaces
+    }
+</code></pre>
+<p>
+    The project files must be placed inside the following directories.
+</p>
+<ul>
+    <li>
+        <code>src/main/groovy</code>: groovy classes used by the site scripts.
+    </li>
+    <li>
+        <code>src/main/site</code>: where the document generation scripts are placed.
+        The relative path and the name of a script are used as the path and name of the generated page.
+        For example the script <code>post.groovy</code> in the <code>blog/posts/</code> directory generates the <code>blog/posts/post.html</code> page.
+    </li>
+    <li>
+        <code>src/main/resources</code>: contains site resources like images, CSS and JavaScript files.
+        These files are copied to the site target directory keeping their folder structure.
+    </li>
+</ul>
+<h3>Script context</h3>
+<p>
+    Every script has access to a context object referenced by a variable called <code>site</code>.
+    The site object has the following fields:
+</p>
+<ul>
+    <li><code>site.builder</code>: the HTML builder currently in use, that is also the script delegate object.</li>
+    <li><code>site.root</code>: the absolute path where the site will be deployed on the target host.</li>
+    <li><code>site.page</code>: the relative path of the page currently being generated.</li>
+</ul>
+<h3>Metatags</h3>
+<p>
+    The builder defines three special tags, called <em>metatags</em>.
+    They are used to request the builder a special behaviour when translating their content.
+</p>
+<p>
+    The simplest one is the <em>text metatag</em>, an underscore that accepts a string as argument.
+    The string it contains will be formatted in the target document as it is, without en enclosing tag.
+</p>
+<p>
+    A metatag that also uses <code>_</code> as its identifier is the <em>inlining metatag</em>.
+    It is different from the text metatag in the fact that it accepts a closure as argument instead of a string.
+    The tags it encloses are formatted on a single line.
+    For example
+</p>
+<pre><code>
+    _ { _ 'Inlines '; em 'multiple'; _ ' tags and text.' }
+</code></pre>
+<p>
+    translates to
+</p>
+<pre><code>
+    Inlines &lt;em&gt;multiple&lt;em&gt; tags and text.
+</code></pre>
+<p>
+    The last one is the <em>extension metatag</em>.
+    It is identified by the dollar sign and accepts a callable object as its argument.
+    The extension is invoked by passing it the HTML builder currently in use.
+    Therefore it can be used to include snippets, which work also as templates if they are configurable.
+    For example
+</p>
+<pre><code>
+    def anchor = { name ->
+        { document -> document.a(name: name, '') }
+    }
+
+    _ { $ anchor('section'); h2 'Section' }
+</code></pre>
+<p>
+    translates to
+</p>
+<pre><code>
+    &lt;a name="section"&gt;&lt;/a&gt;&lt;h2&gt;Section&lt;/h2&gt;
+</code></pre>
+<h3>Writing site scripts</h3>
+<p>
+    Here is presented a script example to explain how the Site Builder works.
+    Given the <a href="#configuration">already defined configuration</a>, the following code
+</p>
+<pre><code>
+    def homeLink = { it.a(href: site.root, 'Home') }
+    '!DOCTYPE'(html: null)
+    html(lang: 'en') {
+        head {
+            title 'Example Page'
+        }
+        body {
+            h3 'How the Site Builder works'
+            _ {
+                p {
+                    _ 'The link '
+                    $ homeLink
+                    _ ' will take you to the homepage.'
+                }
+            }
+        }
+    }
+</code></pre>
+<p>
+    generates the HTML below:
+</p>
+<pre><code>
+    &lt;!DOCTYPE html&gt;
+    &lt;html lang="en"&gt;
+      &lt;head&gt;
+        &lt;title&gt;Example Page&lt;/title&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+        &lt;h3&gt;How the Site Builder works&lt;/h3&gt;
+        &lt;p&gt;The link &lt;a href="/static/blog/"&gt;Home&lt;/a&gt; will take you to the homepage.&lt;/p&gt;
+      &lt;/body&gt;
+    &lt;/html&gt;
+</code></pre>
+<p>
+    How does the code above translate to the generated HTML?
+    Actually every tag is a groovy method call, which accepts a list of optional named parameters and an optional string parameter.
+    Here is a detailed description of the script behaviour.
+</p>
+<ul>
+<li>
+    <code>def homeLink = { it.a(href: site.root, 'Home') }</code><br>
+    Defines a closure that uses an HTML builder (the closure implicit argument <code>it</code>) to construct a link to the homepage.
+    The value of <code>site.root</code> is the absolute path where the site will be deployed on the target host, that can be specified in the plugin configuration.
+</li>
+<li>
+    <code>'!DOCTYPE'(html: null)</code><br>
+    In groovy it is possible to call methods containing special characters by writing their name as a string literal.
+    The heading tag <code>!DOCTYPE</code> can be added by writing it as <code>'!DOCTYPE'</code>.
+    The arguments inside the parenthesis are a list of key-value pairs separated by a colon.
+    If the value is a non-null value, the pair is translated to a tag attribute <code>key="value"</code>, otherwise the key is translated to a tag flag without a value.
+</li>
+<li>
+    <code>html(lang: 'en') { ... }</code><br>
+    This is the document root tag.
+    It accepts as its last parameter a closure (in groovy, closures can be specified outside the arguments list when they are the last parameter) that defines its children tags.
+</li>
+<li>
+    <code>title 'Example Page'</code><br>
+    A tag with a text value (argument parenthesis are optional).
+</li>
+<li>
+    <code>_ { p { ... } }</code><br>
+    The <em>inlining metatag</em> <code>_</code> does not generate additional HTML code, but it influences how it is formatted.
+    It requests the builder to format all its children tags on a single line.
+    This improves the readability of the generated HTML, especially when alternating plain text and tags.
+</li>
+<li>
+    <code>_ 'The link '</code><br>
+    The <em>text metatag</em> is an underscore followed by a string, which formats a plain text without an enclosing tag.
+</li>
+<li>
+    <code>$ homeLink</code><br>
+    The <em>extension metatag</em> <code>$</code> includes a snippet in the generated document.
+    The snippet is a groovy closure that accepts the HTML builder as its argument.
+    The result is the same as if the closure body were directly inserted inside the script.
+</li>
+</ul>
+</div>
