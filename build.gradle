@@ -7,7 +7,7 @@ group = 'org.metahelicase'
 version = '1.0-SNAPSHOT'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -24,7 +24,7 @@ pluginBundle {
     plugins {
         site {
             id = 'org.metahelicase.site-builder'
-            displayName = 'Gradle Site Builder Plugin'
+            displayName = 'Site Builder gradle plugin'
             tags = ['static', 'site', 'html', 'builder', 'generator', 'template']
             version = project.version
         }
