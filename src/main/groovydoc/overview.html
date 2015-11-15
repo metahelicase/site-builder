@@ -19,12 +19,10 @@
     The plugin has only two configurable properties, accessible through the <code>site</code> object in the <code>build.gradle</code> script.
 </p>
 <a name="configuration"></a>
-<pre><code>
-    site {
+<pre><code>    site {
         root '/static/blog/'    // the site deploy path on the target host, default is /
         indentation 2           // the tab width used to indent HTML tags, default is 4 spaces
-    }
-</code></pre>
+    }</code></pre>
 <p>
     The project files must be placed inside the following directories.
 </p>
@@ -67,15 +65,11 @@
     The tags it encloses are formatted on a single line.
     For example
 </p>
-<pre><code>
-    _ { _ 'Inlines '; em 'multiple'; _ ' tags and text.' }
-</code></pre>
+<pre><code>    _ { _ 'Inlines ' em 'multiple' _ ' tags and text.' }</code></pre>
 <p>
     translates to
 </p>
-<pre><code>
-    Inlines &lt;em&gt;multiple&lt;em&gt; tags and text.
-</code></pre>
+<pre><code>    Inlines &lt;em&gt;multiple&lt;/em&gt; tags and text.</code></pre>
 <p>
     The last one is the <em>extension metatag</em>.
     It is identified by the dollar sign and accepts a callable object as its argument.
@@ -83,26 +77,21 @@
     Therefore it can be used to include snippets, which work also as templates if they are configurable.
     For example
 </p>
-<pre><code>
-    def anchor = { name ->
+<pre><code>    def anchor = { name ->
         { document -> document.a(name: name, '') }
     }
 
-    _ { $ anchor('section'); h2 'Section' }
-</code></pre>
+    _ { $ anchor('section') h2 'Section' }</code></pre>
 <p>
     translates to
 </p>
-<pre><code>
-    &lt;a name="section"&gt;&lt;/a&gt;&lt;h2&gt;Section&lt;/h2&gt;
-</code></pre>
+<pre><code>    &lt;a name="section"&gt;&lt;/a&gt;&lt;h2&gt;Section&lt;/h2&gt;</code></pre>
 <h3>Writing site scripts</h3>
 <p>
     Here is presented a script example to explain how the Site Builder works.
     Given the <a href="#configuration">already defined configuration</a>, the following code
 </p>
-<pre><code>
-    def homeLink = { it.a(href: site.root, 'Home') }
+<pre><code>    def homeLink = { it.a(href: site.root, 'Home') }
     '!DOCTYPE'(html: null)
     html(lang: 'en') {
         head {
@@ -110,21 +99,13 @@
         }
         body {
             h3 'How the Site Builder works'
-            _ {
-                p {
-                    _ 'The link '
-                    $ homeLink
-                    _ ' will take you to the homepage.'
-                }
-            }
+            _ { p { _ 'The link ' $ homeLink _ ' will take you to the homepage.' } }
         }
-    }
-</code></pre>
+    }</code></pre>
 <p>
     generates the HTML below:
 </p>
-<pre><code>
-    &lt;!DOCTYPE html&gt;
+<pre><code>    &lt;!DOCTYPE html&gt;
     &lt;html lang="en"&gt;
       &lt;head&gt;
         &lt;title&gt;Example Page&lt;/title&gt;
@@ -133,8 +114,7 @@
         &lt;h3&gt;How the Site Builder works&lt;/h3&gt;
         &lt;p&gt;The link &lt;a href="/static/blog/"&gt;Home&lt;/a&gt; will take you to the homepage.&lt;/p&gt;
       &lt;/body&gt;
-    &lt;/html&gt;
-</code></pre>
+    &lt;/html&gt;</code></pre>
 <p>
     How does the code above translate to the generated HTML?
     Actually every tag is a groovy method call, which accepts a list of optional named parameters and an optional string parameter.

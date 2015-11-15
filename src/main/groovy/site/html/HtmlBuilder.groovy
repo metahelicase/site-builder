@@ -126,22 +126,25 @@ class HtmlBuilder extends BuilderSupport {
      * Constructs a builder that writes HTML to the standard output, indenting
      * tags by the given tab width.
      */
-    HtmlBuilder(int indentation = 4) { this(System.out, indentation) }
+    HtmlBuilder(int indentation = 4) {
+        this(System.out, indentation)
+    }
 
     /**
      * Applies the given callable object to this builder. This method can be
      * used to include HTML snippets in the document by running the relative
      * snipped generation code.
      */
-    void $(extend) {
+    HtmlBuilder $(Object extend) {
         extend this
+        return this
     }
 
-    Tag createNode(name) {
+    Tag createNode(Object name) {
         [name: name]
     }
 
-    Tag createNode(name, value) {
+    Tag createNode(Object name, Object value) {
         [name: name, value: value]
     }
 
@@ -153,14 +156,23 @@ class HtmlBuilder extends BuilderSupport {
         [name: name, attributes: attributes, value: value]
     }
 
-    void setParent(parent, child) {
+    void setParent(Object parent, Object child) {
         parent.children << child
         child.inline = parent.inline || parent.inlineMetatag
         child.indentation = parent.indentation + indentation
     }
 
-    void nodeCompleted(parent, node) {
+    void nodeCompleted(Object parent, Object node) {
         if (parent == null) { new TagFormatter().format node }
+    }
+
+    /**
+     * Invoked after every node creation, returns this builder so tag
+     * declarations can be chained on a single line without semicolons that
+     * separate them.
+     */
+    HtmlBuilder postNodeCompletion(Object parent, Object node) {
+        return this
     }
 
     private class TagFormatter {
