@@ -12,7 +12,7 @@ class HtmlBuilderTest {
 
     HtmlBuilderTest script(Closure script) {
         document.with script
-        this
+        return this
     }
 
     void generates(String html) {
@@ -288,5 +288,33 @@ class HtmlBuilderTest {
                 tag tab
             }
         } generates "<tag>$tab</tag>\n"
+    }
+
+    @Test
+    void canChainTagDeclarationAfterEmptyTag() {
+        script {
+            tag() tag()
+        } generates'<tag>\n<tag>\n'
+    }
+
+    @Test
+    void canChainTagDeclarationAfterTagValue() {
+        script {
+            tag 'a' tag()
+        } generates '<tag>a</tag>\n<tag>\n'
+    }
+
+    @Test
+    void canChainTagDeclarationAfterTagAttributes() {
+        script {
+            tag(attribute: 'value') tag()
+        } generates '<tag attribute="value">\n<tag>\n'
+    }
+
+    @Test
+    void canChainTagDeclarationAfterClosure() {
+        script {
+            tag { child() } tag()
+        } generates "<tag>\n$tab<child>\n</tag>\n<tag>\n"
     }
 }
