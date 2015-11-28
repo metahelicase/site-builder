@@ -19,7 +19,7 @@ import org.gradle.api.tasks.bundling.Compression
  * directory preserving the folder structure. The {@code zipSite} and
  * {@code tgzSite} tasks create an archive containing the built site.
  *
- * @see SitePluginExtension for the plugin configuration parameters
+ * @see SitePluginExtension
  */
 class SitePlugin implements Plugin<Project> {
 
