@@ -1,5 +1,6 @@
 ---
 title: Site Builder
+layout: default
 ---
 
 # Site Builder Gradle Plugin
