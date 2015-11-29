@@ -1,1 +1,7 @@
-language: groovy
+language: generic
+sudo: required
+services: docker
+
+before_install: docker build -t site-builder .
+
+script: docker run --rm -v `pwd`:/project site-builder check --stacktrace
