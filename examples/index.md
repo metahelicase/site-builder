@@ -1,3 +1,8 @@
+---
+title: Examples
+layout: default
+---
+
 # Site Builder by Examples
 
 ### Does an empty script generate anything?
