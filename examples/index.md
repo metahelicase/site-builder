@@ -257,3 +257,117 @@ _ { p { _ 'Interleaving ' em 'and' _ ' inlining.' } }
 {% highlight html %}
 <p>Interleaving <em>and</em> inlining.</p>
 {% endhighlight %}
+
+## Snippets and Templates
+
+HTML documents often contain repeated structures, like navigation buttons or thumbnails with captions.
+The components can also be shared between multiple documents, which define the site look and feel.
+
+Site Builder implements a document extension mechanism with the *extension metatag*.
+Tags can be declared in a separate groovy file or within a closure, and then included into the document script.
+The extension metatag is named `$` and accepts a callable object, which will be given the current builder as its argument.
+
+{% highlight groovy %}
+def extension = { builder -> ... }
+
+$ extension
+{% endhighlight %}
+
+The distinction between snippets and templates is only conceptual.
+You can think of a template as a configurable document while a snippet is a subcomponent that can be included.
+The extension metatag simply considers both as document extensions.
+
+### Extending with a closure
+
+Small snippets that are used only in a single document can be specified as closures in the same script.
+For example, if a link appears multiple times inside a document, it can be defined as a snippet.
+
+{% highlight groovy %}
+def twitter = { it.with {
+    a(href: 'https://twitter.com/MetaHelicase', '@MetaHelicase')
+} }
+
+_ { _ 'Follow ' $ twitter _ ' on twitter.' }
+{% endhighlight %}
+
+{% highlight html %}
+Follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
+{% endhighlight %}
+
+When the closure is defined inside the document script, it has the document builder as implicit delegate.
+Therefore the closure argument can be ignored.
+
+{% highlight groovy %}
+def twitter = {
+    a(href: 'https://twitter.com/MetaHelicase', '@MetaHelicase')
+}
+
+_ { _ 'Follow ' $ twitter _ ' on twitter.' }
+{% endhighlight %}
+
+{% highlight html %}
+Follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
+{% endhighlight %}
+
+Snippets can be parameterized by defining a closure with parameters.
+However the extension metatag requires a closure that accepts the builder as its only argument, so when invoked the closure must be armored inside an other closure.
+
+{% highlight groovy %}
+def twitter = { account ->
+    a(href: "https://twitter.com/$account", "@$account")
+}
+
+_ { _ 'Follow ' $ { twitter 'MetaHelicase' } _ ' on twitter.' }
+{% endhighlight %}
+
+{% highlight html %}
+Follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
+{% endhighlight %}
+
+### Extending with a class
+
+Extensions can be defined as groovy classes under the path `src/main/groovy`.
+An extension class must implement the `call` method that accepts the document builder as its argument.
+
+For example, you can define a footer component for the HTML documents of your site.
+
+{% highlight groovy %}
+class Footer {
+
+    String copyrightYear
+    String email
+    String phone
+
+    void call(document) {
+        document.with {
+            footer {
+                p {
+                    small('style': 'color:grey;') {
+                        _ "&copy; Copyright $copyrightYear, Owner,"
+                        _ { _ 'email: ' a('href': "mailto:$email", email) _ ','}
+                        _ { _ 'tel. ' a('href': "tel:$phone", phone) }
+                    }
+                }
+            }
+        }
+    }
+}
+{% endhighlight %}
+
+Then a footer instance can be configured and included into the document.
+
+{% highlight groovy %}
+$ new Footer(copyrightYear: '2015-2016', email: 'mail@example.com', phone: '001231231234
+{% endhighlight %}
+
+{% highlight html %}
+<footer>
+    <p>
+        <small style="color:grey;">
+            &copy; Copyright 2015-2016, Owner,
+            email: <a href="mailto:mail@example.com">mail@example.com</a>,
+            tel. <a href="tel:001231231234">001231231234</a>
+        </small>
+    </p>
+</footer>
+{% endhighlight %}
