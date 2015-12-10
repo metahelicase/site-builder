@@ -1,4 +1,4 @@
 name: Site Builder
-baseurl: /site-builder
+baseurl: /
 markdown: redcarpet
 pygments: true

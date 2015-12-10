@@ -12,7 +12,7 @@ Advanced features and use cases are not presented here.
 
 The most important kind of file you will write using Site Builder is the *document script*.
 It is a one-to-one mapping to an HTML document that will be included in your site.
-The HTML document will have the same path and the same name of the script that generates, but with the extension `.html` instead of `.groovy`.
+The HTML document will have the same path and the same name of the script that generates it, but with the extension `.html` instead of `.groovy`.
 
 Alongside the document scripts, you can write any groovy class that defines a snippet or a template.
 They can be instantiated by a document script and used to produce a piece of HTML in a concise and clear way.
@@ -54,10 +54,6 @@ With this feature you can write
 {% highlight html %}
 <!DOCTYPE html>
 {% endhighlight %}
-
-> This doesn't make writing `'?php ... ?'()` a good idea...
->
-> -- <cite>Your Conscience</cite>
 
 ### Text tags
 
