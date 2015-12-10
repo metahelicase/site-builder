@@ -357,7 +357,7 @@ class Footer {
 Then a footer instance can be configured and included into the document.
 
 {% highlight groovy %}
-$ new Footer(copyrightYear: '2015-2016', email: 'mail@example.com', phone: '001231231234
+$ new Footer(copyrightYear: '2015-2016', email: 'mail@example.com', phone: '001231231234')
 {% endhighlight %}
 
 {% highlight html %}
