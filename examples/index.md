@@ -8,6 +8,70 @@ layout: default
 Here is presented a tutorial that covers the basics of Site Builder usage and configuration.
 Advanced features and use cases are not presented here.
 
+## Configuration
+
+Site Builder is a gradle plugin, therefore it uses the gradle DSL to configure a site project.
+A project layout follows the directory structure shown below.
+
+```
+build.gradle
+src
+`-- main
+    |-- groovy
+    |-- resources
+    `-- site
+```
+
+The site scripts must go under the `src/main/site` path.
+The `src/main/resources` contains the files that must be copied to the site build directory without being processed.
+Additional groovy classes that don't represent a site page should go inside the `src/main/groovy` directory.
+
+The `build.gradle` file declares and configures the gradle plugins that are used to build the project.
+The only required plugin is Site Builder: it already applies the groovy plugin needed to build the groovy files.
+
+{% highlight groovy %}
+plugins {
+    id 'org.metahelicase.site-builder' version '1.0'
+}
+{% endhighlight %}
+
+The site plugin can be configured inside the `site` block in the build script.
+
+{% highlight groovy %}
+site {
+    root '/deploy/path/'
+    indentation 2
+}
+{% endhighlight %}
+
+The `root` property defines the path where the site will be deployed on the target host.
+For example, if the site should be deployed at `example.com/static/blog`, the `root` property must be configured with `/static/blog/`.
+If not specified, the default value is `/`.
+
+The `indentation` property represents the tab width that the builder must use when indenting nested tags.
+The default value is `4`.
+
+## Building a Site
+
+The Site Builder plugin has four tasks that can be used to build and package your site.
+By running `gradle tasks`, you can find their name and a short description.
+
+```
+Site tasks
+----------
+site - Build static webpages from groovy scripts.
+siteResources - Copies the site resources to the site build directory.
+tgzSite - Assembles a tgz (gzip compressed tar) archive containing the built site.
+zipSite - Assembles a zip archive containing the built site.
+```
+
+The `tgzSite` and `zipSite` tasks depend on `site` and `siteResources`.
+You can build and zip the site by running
+
+```
+gradle zipSite
+```
+
 ## Scripting
 
 The most important kind of file you will write using Site Builder is the *document script*.
