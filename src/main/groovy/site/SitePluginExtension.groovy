@@ -4,13 +4,10 @@ package site
 class SitePluginExtension {
 
     /** The directory containing the document generation scripts. */
-    final String srcDir = 'src/main/site'
-
-    /** The directory containing the site resources, like images, CSS and JavaScript files. */
-    final String resourcesDir = 'src/main/resources'
+    String scriptsDir = 'src/main/site'
 
     /** The target directory where the generated pages and the site resources are put. */
-    final String buildDir = 'build/site'
+    String buildDir = 'build/site'
 
     /** The tab width used to indent HTML tags, default is 4 spaces. */
     int indentation = 4

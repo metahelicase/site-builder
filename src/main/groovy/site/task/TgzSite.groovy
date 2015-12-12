@@ -7,8 +7,7 @@ import org.gradle.api.tasks.bundling.Compression
 class TgzSite extends Tar {
 
     TgzSite() {
-        from project.site.buildDir
-        destinationDir = project.buildDir
+        from { project.site.buildDir }
         compression Compression.GZIP
         group 'site'
         description 'Assembles a tgz (gzip compressed tar) archive containing the built site.'

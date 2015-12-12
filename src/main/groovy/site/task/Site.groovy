@@ -29,7 +29,7 @@ class Site extends DefaultTask {
 
     @TaskAction
     void executeScripts() {
-        def scripts = project.fileTree(project.site.srcDir) { include '**/*.groovy' }
+        def scripts = project.fileTree(project.site.scriptsDir) { include '**/*.groovy' }
         scripts.visit { execute it }
     }
 
