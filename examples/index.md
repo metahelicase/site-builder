@@ -53,12 +53,13 @@ The default value is `4`.
 
 ## Building a Site
 
-The Site Builder plugin has four tasks that can be used to build and package your site.
+The Site Builder plugin has five tasks that can be used to initialize, build and package your site.
 By running `gradle tasks`, you can find their name and a short description.
 
 ```
 Site tasks
 ----------
+initSite - Initializes the directory layout of the site project.
 site - Build static webpages from groovy scripts.
 siteResources - Copies the site resources to the site build directory.
 tgzSite - Assembles a tgz (gzip compressed tar) archive containing the built site.

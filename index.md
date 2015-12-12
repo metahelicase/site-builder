@@ -19,3 +19,25 @@ HTML tags are inserted into the document by using groovy method calls, where the
 With Site Builder you can use an entire programming language to define HTML documents in a cleaner and more concise way.
 
 [Learn how to use Site Builder by examples]({{ site.baseurl }}examples "Site Builder by Examples")
+
+### Quick Setup
+
+Copy the following [gradle](http://gradle.org/gradle-download/ "Download gradle") script to a file named `build.gradle`
+
+{% highlight groovy %}
+plugins {
+    id 'org.metahelicase.site-builder' version '1.0'
+}
+{% endhighlight %}
+
+then initialize the directory layout of the project by running the task
+
+```
+gradle initSite
+```
+
+Now you can build the generated example page with
+
+```
+gradle site
+```
