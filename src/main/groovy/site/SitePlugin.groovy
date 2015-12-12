@@ -31,5 +31,6 @@ class SitePlugin implements Plugin<Project> {
         project.task('siteResources', type: SiteResources)
         project.task('zipSite', type: ZipSite, dependsOn: ['site', 'siteResources'])
         project.task('tgzSite', type: TgzSite, dependsOn: ['site', 'siteResources'])
+        project.task('initSite', type: InitSite)
     }
 }
