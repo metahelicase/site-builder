@@ -20,62 +20,62 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void canGenerateAnEmptyDocument() {
+    void 'can generate an empty document'() {
         script {
         } generates ''
     }
 
     @Test
-    void canGenerateAnEmptyTag() {
+    void 'can generate an empty tag'() {
         script {
             tag()
         } generates '<tag>\n'
     }
 
     @Test
-    void canGenerateTagWithValue() {
+    void 'can generate tag with value'() {
         script {
             tag 'value'
         } generates '<tag>value</tag>\n'
     }
 
     @Test
-    void canGenerateTagWithAttributeFlag() {
+    void 'can generate tag with attribute flag'() {
         script {
             tag(attribute: null)
         } generates '<tag attribute>\n'
     }
 
     @Test
-    void canGenerateTagWithAttributeNameValuePair() {
+    void 'can generate tag with attribute name and value pair'() {
         script {
             tag(attribute: 'value')
         } generates '<tag attribute="value">\n'
     }
 
     @Test
-    void canGenerateTagWithAttributeWithAnEmptyValue() {
+    void 'can generate tag with attribute with an empty value'() {
         script {
             tag(attribute: '')
         } generates '<tag attribute="">\n'
     }
 
     @Test
-    void canGenerateTagWithAttributeWithNumericValue() {
+    void 'can generate tag with attribute with numeric value'() {
         script {
             tag(attribute: 0)
         } generates '<tag attribute="0">\n'
     }
 
     @Test
-    void canGenerateTagWithAttributeWithBooleanValue() {
+    void 'can generate tag with attribute with boolean value'() {
         script {
             tag(attribute: true)
         } generates '<tag attribute="true">\n'
     }
 
     @Test
-    void canGenerateTagWithChild() {
+    void 'can generate tag with child'() {
         script {
             tag {
                 child()
@@ -84,7 +84,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void canGenerateTagWithChildrenThatAreIndented() {
+    void 'can generate tag with children that are indented'() {
         script {
             tag {
                 child {
@@ -95,28 +95,28 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void canApplyBuilderFunctor() {
+    void 'can apply builder functor'() {
         script {
             $ { it.tag() }
         } generates '<tag>\n'
     }
 
     @Test
-    void tagNamesStartingWithTheDollarSignAreEscaped() {
+    void 'tag names starting with the dollar sign are escaped'() {
         script {
             $tag()
         } generates '<tag>\n'
     }
 
     @Test
-    void singleLineValuesAreFormattedInline() {
+    void 'single line values are formatted inline'() {
         script {
             tag 'value'
         } generates '<tag>value</tag>\n'
     }
 
     @Test
-    void multipleLinesValuesAreFormattedByTrimmingLinesAndAddingIndentation() {
+    void 'multiple lines values are formatted by trimming lines and adding indentation'() {
         script {
             tag '''multiple
                 lines
@@ -125,7 +125,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void firstLineOfMultipleLinesValueIsDroppedIfBlank() {
+    void 'first line of multiple lines value is dropped if blank'() {
         script {
             tag '''
                 multiple
@@ -135,7 +135,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void lastLineOfMultipleLinesValueIsDroppedIfBlank() {
+    void 'last line of multiple lines value is dropped if blank'() {
         script {
             tag '''multiple
                 lines
@@ -145,7 +145,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void internalBlankLinesOfMultipleLinesValueArePreservedButNotIndented() {
+    void 'internal blank lines of multiple lines value are preserved but not indented'() {
         script {
             tag '''multiple
                 lines
@@ -155,14 +155,14 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscoreFormatsSingleLineStringsWithoutTag() {
+    void 'underscore formats single line strings without tag'() {
         script {
             _ 'text'
         } generates 'text\n'
     }
 
     @Test
-    void underscoreFormatsMultipleLinesStringsWithIndentation() {
+    void 'underscore formats multiple lines strings with indentation'() {
         script {
             tag {
                 _ '''
@@ -175,7 +175,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscoreDoesNotIndentBlankLines() {
+    void 'underscore does not indent blank lines'() {
         script {
             tag {
                 _ '''
@@ -189,7 +189,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscoreFormatsAnEmptyStringAsABlankLine() {
+    void 'underscore formats an empty string as a blank line'() {
         script {
             tag {
                 _ ''
@@ -198,7 +198,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscorePreservesBlankSpacesOnASingleBlankLine() {
+    void 'underscore preserves blank spaces on a single blank line'() {
         script {
             tag {
                 _ tab
@@ -207,7 +207,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscoreInlinesItsChildren() {
+    void 'underscore inlines its children'() {
         script {
             _ {
                 tag 'inlined with'
@@ -217,7 +217,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void nestedUnderscoresDoNotAddFormatting() {
+    void 'nested underscores do not add formatting'() {
         script {
             _ {
                 tag 'inlined with'
@@ -229,7 +229,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscoreInlinesNestedChildrenTags() {
+    void 'underscore inlines nested children tags'() {
         script {
             _ {
                 tag {
@@ -241,7 +241,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscoreInlinesMultipleLinesText() {
+    void 'underscore inlines multiple lines text'() {
         script {
             _ {
                 _ '''
@@ -254,7 +254,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscoreInlinesMultipleLinesTextDroppingEmptyLines() {
+    void 'underscore inlines multiple lines text dropping empty lines'() {
         script {
             _ {
                 _ '''
@@ -269,7 +269,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void underscoreInlinesMultipleLinesTagValue() {
+    void 'underscore inlines multiple lines tag value'() {
         script {
             _ {
                 tag '''
@@ -282,7 +282,7 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void canInlineSingleLineBlankText() {
+    void 'can inline single line blank text'() {
         script {
             _ {
                 tag tab
@@ -291,28 +291,28 @@ class HtmlBuilderTest {
     }
 
     @Test
-    void canChainTagDeclarationAfterEmptyTag() {
+    void 'can chain tag declaration after empty tag'() {
         script {
             tag() tag()
         } generates'<tag>\n<tag>\n'
     }
 
     @Test
-    void canChainTagDeclarationAfterTagValue() {
+    void 'can chain tag declaration after tag value'() {
         script {
             tag 'a' tag()
         } generates '<tag>a</tag>\n<tag>\n'
     }
 
     @Test
-    void canChainTagDeclarationAfterTagAttributes() {
+    void 'can chain tag declaration after tag attributes'() {
         script {
             tag(attribute: 'value') tag()
         } generates '<tag attribute="value">\n<tag>\n'
     }
 
     @Test
-    void canChainTagDeclarationAfterClosure() {
+    void 'can chain tag declaration after closure'() {
         script {
             tag { child() } tag()
         } generates "<tag>\n$tab<child>\n</tag>\n<tag>\n"
