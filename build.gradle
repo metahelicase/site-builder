@@ -14,6 +14,11 @@ dependencies {
     compile gradleApi()
     compile localGroovy()
     testCompile 'junit:junit:4.12'
+    testCompile gradleTestKit()
+}
+
+test {
+    systemProperty 'plugin.test.classpath', sourceSets.main.runtimeClasspath.join('\n')
 }
 
 pluginBundle {
