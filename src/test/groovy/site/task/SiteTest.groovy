@@ -22,17 +22,15 @@ class SiteTest extends PluginTest {
 
     @Test
     void 'execution of an empty script generates an empty html file'() {
-        def scriptsDir = project.newFolder 'src', 'main', 'site'
-        new File(scriptsDir, 'index.groovy').createNewFile()
+        newFile 'src/main/site/index.groovy'
         BuildResult build = run TASK
-        def page = new File(project.root, 'build/site/index.html')
+        def page = file 'build/site/index.html'
         assertEquals('', page.text);
     }
 
     @Test
     void 'execution of a script containing tag declarations generates an html file containing the declared tags'() {
-        def scriptsDir = project.newFolder 'src', 'main', 'site'
-        new File(scriptsDir, 'index.groovy') << '''
+        newFile('src/main/site/index.groovy') << '''
             '!DOCTYPE html'()
             html(lang: 'en') {
                 head {
@@ -43,7 +41,7 @@ class SiteTest extends PluginTest {
             }
         '''
         BuildResult build = run TASK
-        def page = new File(project.root, 'build/site/index.html')
+        def page = file 'build/site/index.html'
         def html = [
             '<!DOCTYPE html>',
             '<html lang="en">',
@@ -61,30 +59,28 @@ class SiteTest extends PluginTest {
 
     @Test
     void 'site scripts can access the site.root variable'() {
-        new File(project.root, 'build.gradle') << '''
+        file('build.gradle') << '''
             site {
                 root '/root/'
             }
         '''
-        def scriptsDir = project.newFolder 'src', 'main', 'site'
-        new File(scriptsDir, 'index.groovy') << '''a(href: site.root, 'Home')'''
+        newFile('src/main/site/index.groovy') << '''a(href: site.root, 'Home')'''
         BuildResult build = run TASK
-        def page = new File(project.root, 'build/site/index.html')
+        def page = file 'build/site/index.html'
         def html = '<a href="/root/">Home</a>\n'
         assertEquals(html, page.text);
     }
 
     @Test
     void 'site scripts can access the site.page variable'() {
-        new File(project.root, 'build.gradle') << '''
+        file('build.gradle') << '''
             site {
                 root '/root/'
             }
         '''
-        def scriptsDir = project.newFolder 'src', 'main', 'site'
-        new File(scriptsDir, 'index.groovy') << '''a(href: site.page, 'this page')'''
+        newFile('src/main/site/index.groovy') << '''a(href: site.page, 'this page')'''
         BuildResult build = run TASK
-        def page = new File(project.root, 'build/site/index.html')
+        def page = file 'build/site/index.html'
         def html = '<a href="/root/index.html">this page</a>\n'
         assertEquals(html, page.text);
     }

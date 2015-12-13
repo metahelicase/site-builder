@@ -24,6 +24,17 @@ abstract class PluginTest {
         return pluginTestClasspath.readLines().collect { new File(it) }
     }
 
+    File file(String path) {
+        new File(project.root, path)
+    }
+
+    File newFile(String path) {
+        def file = new File(project.root, path)
+        file.parentFile.mkdirs()
+        file.createNewFile()
+        return file
+    }
+
     BuildResult run(String task) {
         return GradleRunner.create()
                 .withProjectDir(project.root)
