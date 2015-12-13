@@ -54,7 +54,7 @@ class Site extends DefaultTask {
 
     private CompilerConfiguration configuration() {
         def config = new CompilerConfiguration();
-        config.classpath << project.sourceSets.main.output.classesDir.toString()
+        project.sourceSets.main.runtimeClasspath.each { config.classpath << it.toString() }
         return config
     }
 }
