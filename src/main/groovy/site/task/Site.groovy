@@ -37,18 +37,19 @@ class Site extends DefaultTask {
         if (script.file.isDirectory()) { return }
         def page = script.relativePath.toString() - '.groovy' + '.html'
         def target = project.file("$project.site.buildDir/$page")
+        def pagePath = "$project.site.root$page"
         target.parentFile.mkdirs()
         def config = configuration()
         target.withWriter { out ->
             def bindings = [
                 builder: new HtmlBuilder(out, project.site.indentation),
                 root: project.site.root,
-                page: page
+                page: pagePath
             ]
             def shell = new GroovyShell(new Binding([site: bindings]), config)
             shell.evaluate("site.builder.with { ${script.file.text} }")
         }
-        logger.lifecycle " >> $project.site.root$page"
+        logger.lifecycle " >> $pagePath"
     }
 
     private CompilerConfiguration configuration() {
