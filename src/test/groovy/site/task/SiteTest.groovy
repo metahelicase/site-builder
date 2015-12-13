@@ -29,6 +29,14 @@ class SiteTest extends PluginTest {
     }
 
     @Test
+    void 'site preserves the directory structure'() {
+        newFile 'src/main/site/directory/index.groovy'
+        BuildResult build = run TASK
+        def page = file 'build/site/directory/index.html'
+        assertTrue(page.exists());
+    }
+
+    @Test
     void 'execution of a script containing tag declarations generates an html file containing the declared tags'() {
         newFile('src/main/site/index.groovy') << '''
             '!DOCTYPE html'()

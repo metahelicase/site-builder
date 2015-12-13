@@ -30,31 +30,33 @@ class Site extends DefaultTask {
     @TaskAction
     void executeScripts() {
         def scripts = project.fileTree(project.site.scriptsDir) { include '**/*.groovy' }
-        scripts.visit { execute it }
+        scripts.visit { if (!it.isDirectory()) execute it }
     }
 
     void execute(FileTreeElement script) {
-        if (script.file.isDirectory()) { return }
-        def page = script.relativePath.toString() - '.groovy' + '.html'
-        def target = project.file("$project.site.buildDir/$page")
-        def pagePath = "$project.site.root$page"
-        target.parentFile.mkdirs()
-        def config = configuration()
-        target.withWriter { out ->
-            def bindings = [
-                builder: new HtmlBuilder(out, project.site.indentation),
-                root: project.site.root,
-                page: pagePath
-            ]
-            def shell = new GroovyShell(new Binding([site: bindings]), config)
+        def pageRelativePath = script.path - '.groovy' + '.html'
+        def pageAbsolutePath = "$project.site.root$pageRelativePath"
+        def page = project.file "$project.site.buildDir/$pageRelativePath"
+        page.parentFile.mkdirs()
+        page.withWriter { out ->
+            def builder = new HtmlBuilder(out, project.site.indentation)
+            def shell = new GroovyShell(bindings(builder, pageAbsolutePath), configuration())
             shell.evaluate("site.builder.with { ${script.file.text} }")
         }
-        logger.lifecycle " >> $pagePath"
+        logger.lifecycle " >> $pageAbsolutePath"
     }
 
-    private CompilerConfiguration configuration() {
-        def config = new CompilerConfiguration();
-        project.sourceSets.main.runtimeClasspath.each { config.classpath << it.toString() }
+    Binding bindings(HtmlBuilder builder, String page) {
+        new Binding([site: [
+            builder: builder,
+            root: project.site.root,
+            page: page
+        ]])
+    }
+
+    CompilerConfiguration configuration() {
+        def config = new CompilerConfiguration()
+        config.classpathList = project.sourceSets.main.runtimeClasspath*.toString()
         return config
     }
 }
