@@ -22,7 +22,7 @@ test {
 }
 
 pluginBundle {
-    website = 'http://metahelicase.org/site-builder'
+    website = 'http://site-builder.metahelicase.org'
     vcsUrl = 'https://github.com/metahelicase/site-builder'
     description = 'DSL for building static html pages with composable modules'
 
