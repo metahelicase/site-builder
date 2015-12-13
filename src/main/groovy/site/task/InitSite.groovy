@@ -25,7 +25,7 @@ class InitSite extends DefaultTask {
         if (script.exists()) {
             logger.warn "skipping example script creation (file already exists)"
         } else {
-            script.append InitSite.class.getResourceAsStream('/site/task/index.groovy')
+            script << InitSite.class.getResourceAsStream('/site/task/index.groovy')
         }
     }
 }
