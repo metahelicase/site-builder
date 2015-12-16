@@ -15,7 +15,14 @@ class SiteTest extends PluginTest {
     static final String TASK = 'site'
 
     @Test
-    void 'site succeds in an empty project layout'() {
+    void 'site is up-to-date in an empty project layout'() {
+        BuildResult build = run TASK
+        assertEquals(UP_TO_DATE, build.task(":$TASK").outcome);
+    }
+
+    @Test
+    void 'site succeeds after the build of an empty script'() {
+        newFile 'src/main/site/index.groovy'
         BuildResult build = run TASK
         assertEquals(SUCCESS, build.task(":$TASK").outcome);
     }
@@ -30,9 +37,9 @@ class SiteTest extends PluginTest {
 
     @Test
     void 'site preserves the directory structure'() {
-        newFile 'src/main/site/directory/index.groovy'
+        newFile 'src/main/site/path/index.groovy'
         BuildResult build = run TASK
-        def page = file 'build/site/directory/index.html'
+        def page = file 'build/site/path/index.html'
         assertTrue(page.exists());
     }
 
@@ -86,10 +93,40 @@ class SiteTest extends PluginTest {
                 root '/root/'
             }
         '''
-        newFile('src/main/site/index.groovy') << '''a(href: site.page, 'this page')'''
+        newFile('src/main/site/path/index.groovy') << '''a(href: site.page, 'this page')'''
         BuildResult build = run TASK
-        def page = file 'build/site/index.html'
-        def html = '<a href="/root/index.html">this page</a>\n'
+        def page = file 'build/site/path/index.html'
+        def html = '<a href="/root/path/index.html">this page</a>\n'
         assertEquals(html, page.text);
+    }
+
+    @Test
+    void 'site is up-to-date if nothing changed after last build'() {
+        newFile 'src/main/site/index.groovy'
+        BuildResult build = run TASK
+        assumeTrue(build.task(":$TASK").outcome == SUCCESS);
+        BuildResult anotherBuild = run TASK
+        assertEquals(UP_TO_DATE, anotherBuild.task(":$TASK").outcome);
+    }
+
+    @Test
+    void 'site is run again if a script changed after last build'() {
+        def script = newFile 'src/main/site/index.groovy'
+        BuildResult build = run TASK
+        assumeTrue(build.task(":$TASK").outcome == SUCCESS);
+        script << '''h1('Title')'''
+        BuildResult anotherBuild = run TASK
+        assertEquals(SUCCESS, anotherBuild.task(":$TASK").outcome);
+    }
+
+    @Test
+    void 'site is run again if a groovy class changed after last build'() {
+        newFile 'src/main/site/index.groovy'
+        def groovyFile = newFile('src/main/groovy/Empty.groovy') << 'class Empty {}'
+        BuildResult build = run TASK
+        assumeTrue(build.task(":$TASK").outcome == SUCCESS);
+        groovyFile.text = 'abstract class Empty {}'
+        BuildResult anotherBuild = run TASK
+        assertEquals(SUCCESS, anotherBuild.task(":$TASK").outcome);
     }
 }
