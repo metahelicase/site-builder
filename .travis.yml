@@ -3,6 +3,7 @@ sudo: required
 services: docker
 
 env:
+  - GRADLE_VERSION=2.8
   - GRADLE_VERSION=2.9
   - GRADLE_VERSION=2.10
 
