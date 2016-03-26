@@ -18,7 +18,7 @@ Site Builder inverts this approach: the only language used to structure document
 HTML tags are inserted into the document by using groovy method calls, where the method name corresponds to the tag name and the method arguments are the tag's attributes and content.
 With Site Builder you can use an entire programming language to define HTML documents in a cleaner and more concise way.
 
-[Learn how to use Site Builder by examples]({{ site.baseurl }}examples "Site Builder by Examples")
+[Learn how to use Site Builder by examples](./examples "Site Builder by Examples")
 
 ### Quick Setup
 
