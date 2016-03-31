@@ -101,6 +101,34 @@ class SiteTest extends PluginTest {
     }
 
     @Test
+    void 'site scripts can access the site.indentation variable'() {
+        file('build.gradle') << '''
+            site {
+                indentation 2
+            }
+        '''
+        newFile('src/main/site/path/index.groovy') << '''p "$site.indentation"'''
+        BuildResult build = run TASK
+        def page = file 'build/site/path/index.html'
+        def html = '<p>2</p>\n'
+        assertEquals(html, page.text);
+    }
+
+    @Test
+    void 'site scripts can access a site global variable'() {
+        file('build.gradle') << '''
+            site {
+                global.title = 'Title'
+            }
+        '''
+        newFile('src/main/site/path/index.groovy') << '''title "$site.title"'''
+        BuildResult build = run TASK
+        def page = file 'build/site/path/index.html'
+        def html = '<title>Title</title>\n'
+        assertEquals(html, page.text);
+    }
+
+    @Test
     void 'site is up-to-date if nothing changed after last build'() {
         newFile 'src/main/site/index.groovy'
         BuildResult build = run TASK

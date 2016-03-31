@@ -14,4 +14,7 @@ class SitePluginExtension {
 
     /** The path where the site will be deployed on the target host, default is {@code /}. */
     String root = '/'
+
+    /** Global variables shared among all the site's pages. */
+    Expando global = new Expando()
 }

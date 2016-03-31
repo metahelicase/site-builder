@@ -48,11 +48,14 @@ class Site extends DefaultTask {
     }
 
     Binding bindings(HtmlBuilder builder, String page) {
-        new Binding([site: [
+        def bindings = [
             builder: builder,
             root: project.site.root,
-            page: page
-        ]])
+            page: page,
+            indentation: project.site.indentation
+        ]
+        bindings += project.site.global.getProperties()
+        new Binding([site: bindings])
     }
 
     CompilerConfiguration configuration() {
