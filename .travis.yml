@@ -7,6 +7,7 @@ env:
   - GRADLE_VERSION=2.9
   - GRADLE_VERSION=2.10
   - GRADLE_VERSION=2.11
+  - GRADLE_VERSION=2.12
 
 before_install:
   - docker pull metahelicase/gradle:$GRADLE_VERSION
