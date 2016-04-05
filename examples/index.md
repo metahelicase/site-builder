@@ -342,28 +342,12 @@ The extension metatag simply considers both as document extensions.
 
 Small snippets that are used only in a single document can be specified as closures in the same script.
 For example, if a link appears multiple times inside a document, it can be defined as a snippet.
+When the closure is then called, it has the document builder set as its delegate.
 
 {% highlight groovy %}
-def twitter = { it.with {
-    a(href: 'https://twitter.com/MetaHelicase', '@MetaHelicase')
-} }
+def twitterHandle = { a(href: 'https://twitter.com/MetaHelicase', '@MetaHelicase') }
 
-_ { _ 'Follow ' $ twitter _ ' on twitter.' }
-{% endhighlight %}
-
-{% highlight html %}
-Follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
-{% endhighlight %}
-
-When the closure is defined inside the document script, it has the document builder as implicit delegate.
-Therefore the closure argument can be ignored.
-
-{% highlight groovy %}
-def twitter = {
-    a(href: 'https://twitter.com/MetaHelicase', '@MetaHelicase')
-}
-
-_ { _ 'Follow ' $ twitter _ ' on twitter.' }
+_ { _ 'Follow ' $ twitterHandle _ ' on twitter.' }
 {% endhighlight %}
 
 {% highlight html %}
@@ -371,12 +355,10 @@ Follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
 {% endhighlight %}
 
 Snippets can be parameterized by defining a closure with parameters.
-However the extension metatag requires a closure that accepts the builder as its only argument, so when invoked the closure must be armored inside an other closure.
+However the extension metatag requires a closure, so when invoked the closure must be armored inside an other closure.
 
 {% highlight groovy %}
-def twitter = { account ->
-    a(href: "https://twitter.com/$account", "@$account")
-}
+def twitter = { account -> a(href: "https://twitter.com/$account", "@$account") }
 
 _ { _ 'Follow ' $ { twitter 'MetaHelicase' } _ ' on twitter.' }
 {% endhighlight %}
@@ -399,19 +381,17 @@ class Footer {
     String email
     String phone
 
-    void call(document) {
-        document.with {
-            footer {
-                p {
-                    small('style': 'color:grey;') {
-                        _ "&copy; Copyright $copyrightYear, Owner,"
-                        _ { _ 'email: ' a('href': "mailto:$email", email) _ ','}
-                        _ { _ 'tel. ' a('href': "tel:$phone", phone) }
-                    }
+    void call(document) { document.with {
+        footer {
+            p {
+                small('style': 'color:grey;') {
+                    _ "&copy; Copyright $copyrightYear, Owner,"
+                    _ { _ 'email: ' a('href': "mailto:$email", email) _ ','}
+                    _ { _ 'tel. ' a('href': "tel:$phone", phone) }
                 }
             }
         }
-    }
+    } }
 }
 {% endhighlight %}
 
@@ -431,4 +411,41 @@ $ new Footer(copyrightYear: '2015-2016', email: 'mail@example.com', phone: '0012
         </small>
     </p>
 </footer>
+{% endhighlight %}
+
+## Global parameters
+
+In the `build.gradle` script, in addition to the `root` and `indentation` properties, the `site` block can contain the definition of global parameters.
+Those parameters are available in all the page scripts, contained under a variable named `site`.
+
+`build.gradle`
+{% highlight groovy %}
+plugins {
+    id 'org.metahelicase.site-builder' version '1.0'
+}
+
+site {
+    root '/mysite/'
+    indentation 4
+    global.with {
+        title = 'My Site'
+        copyrightYear = 2016
+    }
+}
+{% endhighlight %}
+
+`src/main/site/index.groovy`
+{% highlight groovy %}
+h1 site.title
+a(href: site.root, 'Home')
+p "This is page $site.page"
+footer "Copyright (C) $site.copyrightYear"
+{% endhighlight %}
+
+`build/site/index.html`
+{% highlight html %}
+<h1>My Site</h1>
+<a href="/mysite/">Home</a>
+<p>This is page /mysite/index.html</p>
+<footer>Copyright (C) 2016</footer>
 {% endhighlight %}
