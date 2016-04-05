@@ -1,6 +1,6 @@
 plugins {
     id 'groovy'
-    id 'com.gradle.plugin-publish' version '0.9.2'
+    id 'com.gradle.plugin-publish' version '0.9.4'
 }
 
 group = 'org.metahelicase'
@@ -25,12 +25,11 @@ pluginBundle {
     website = 'http://site-builder.metahelicase.org'
     vcsUrl = 'https://github.com/metahelicase/site-builder'
     description = 'DSL for building static html pages with composable modules'
-
     plugins {
         site {
             id = 'org.metahelicase.site-builder'
-            displayName = 'Site Builder gradle plugin'
-            tags = ['static', 'site', 'html', 'builder', 'generator', 'template']
+            displayName = 'Site Builder Gradle plugin'
+            tags = ['static', 'site', 'html', 'builder', 'template']
             version = project.version
         }
     }
