@@ -27,11 +27,16 @@ class HtmlBuilder extends BuilderSupport {
     }
 
     /**
-     * Applies the given callable object to this builder.
+     * Runs the given callable object with this builder as its delegate (if the extension is a closure) or as its argument.
      * This method can be used to include HTML snippets in the document by running the relative snipped generation code.
      */
-    HtmlBuilder $(Object extend) {
-        extend this
+    HtmlBuilder $(Object extension) {
+        if (extension in Closure) {
+            extension.delegate = this
+            extension()
+        } else {
+            extension this
+        }
         return this
     }
 

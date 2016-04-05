@@ -97,7 +97,7 @@ class HtmlBuilderTest {
     @Test
     void 'can apply builder functor'() {
         script {
-            $ { it.tag() }
+            $ { tag() }
         } generates '<tag>\n'
     }
 
