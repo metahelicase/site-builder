@@ -115,10 +115,24 @@ class SiteTest extends PluginTest {
     }
 
     @Test
-    void 'site scripts can access a site global variable'() {
+    void 'site scripts can set site global parameters using method call syntax'() {
         file('build.gradle') << '''
             site {
-                global.title = 'Title'
+                title 'Title'
+            }
+        '''
+        newFile('src/main/site/path/index.groovy') << '''title "$site.title"'''
+        BuildResult build = run TASK
+        def page = file 'build/site/path/index.html'
+        def html = '<title>Title</title>\n'
+        assertEquals(html, page.text);
+    }
+
+    @Test
+    void 'site scripts can set site global parameters using property assignment syntax'() {
+        file('build.gradle') << '''
+            site {
+                title = 'Title'
             }
         '''
         newFile('src/main/site/path/index.groovy') << '''title "$site.title"'''

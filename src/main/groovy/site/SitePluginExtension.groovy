@@ -15,6 +15,14 @@ class SitePluginExtension {
     /** The path where the site will be deployed on the target host, default is {@code /}. */
     String root = '/'
 
-    /** Global variables shared among all the site's pages. */
-    Expando global = new Expando()
+    /** Global parameters shared among all the site's pages. */
+    Map parameters = [:]
+
+    def methodMissing(String name, args) {
+        if (args.length > 0) { parameters[name] = args[0] }
+    }
+
+    def propertyMissing(String name, value) {
+        parameters[name] = value
+    }
 }

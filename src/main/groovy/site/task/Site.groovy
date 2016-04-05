@@ -54,7 +54,7 @@ class Site extends DefaultTask {
             page: page,
             indentation: project.site.indentation
         ]
-        bindings += project.site.global.getProperties()
+        bindings << project.site.parameters
         new Binding([site: bindings])
     }
 
