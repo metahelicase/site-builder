@@ -39,10 +39,15 @@ The site plugin can be configured inside the `site` block in the build script.
 
 {% highlight groovy %}
 site {
+    scriptsDir 'src/main/site'
+    buildDir 'build/site'
     root '/deploy/path/'
     indentation 2
 }
 {% endhighlight %}
+
+The `scriptsDir` and `buildDir` properties define the site project's directory layout.
+They don't affect the pages' content and can be left with their default value.
 
 The `root` property defines the path where the site will be deployed on the target host.
 For example, if the site should be deployed at `example.com/static/blog`, the `root` property must be configured with `/static/blog/`.
@@ -427,10 +432,8 @@ plugins {
 site {
     root '/mysite/'
     indentation 4
-    global.with {
-        title = 'My Site'
-        copyrightYear = 2016
-    }
+    title 'My Site'
+    copyrightYear 2016
 }
 {% endhighlight %}
 
