@@ -1,6 +1,7 @@
 ---
 title: Examples
 layout: default
+root: "../"
 ---
 
 # Site Builder by Examples

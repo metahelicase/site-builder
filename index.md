@@ -1,6 +1,7 @@
 ---
 title: Site Builder
 layout: default
+root: "./"
 ---
 
 # Site Builder Gradle Plugin
