@@ -1,3 +1,4 @@
 name: Site Builder
 baseurl: /site-builder/
+markdown: kramdown
 pygments: true
