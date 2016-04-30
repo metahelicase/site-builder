@@ -419,10 +419,18 @@ $ new Footer(copyrightYear: '2015-2016', email: 'mail@example.com', phone: '0012
 </footer>
 ```
 
-## Global parameters
+## Site parameters
 
-In the `build.gradle` script, in addition to the `root` and `indentation` properties, the `site` block can contain the definition of global parameters.
+In the `build.gradle` script, in addition to the `root` and `indentation` parameters, the `site` block can contain the definition of global parameters.
 Those parameters are available in all the page scripts, contained under a variable named `site`.
+
+The parameters always present in the `site` object are the following:
+  - `site.builder`: the DSL delegate,
+  - `site.root`: the path under which the pages are located,
+  - `site.page`: the full path of the page currently being built,
+  - `site.indentation`: how many spaces is made of an indentation level in the built HTML.
+
+The example below shows how to use site parameters.
 
 ```gradle
 // build.gradle
@@ -447,6 +455,8 @@ a(href: site.root, 'Home')
 p "This is page $site.page"
 footer "Copyright (C) $site.copyrightYear"
 ```
+
+The generated page will contain the values of the specified parameters.
 
 ```html
 <!-- build/site/index.html -->
