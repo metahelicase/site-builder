@@ -115,6 +115,34 @@ class SiteTest extends PluginTest {
     }
 
     @Test
+    void 'site scripts can access the site.home variable'() {
+        file('build.gradle') << '''
+            site {
+                root '/root/'
+            }
+        '''
+        newFile('src/main/site/path/to/index.groovy') << '''a(href: site.home, 'Home')'''
+        BuildResult build = run TASK
+        def page = file 'build/site/root/path/to/index.html'
+        def html = '<a href="../../">Home</a>\n'
+        assertEquals(html, page.text);
+    }
+
+    @Test
+    void 'the site.home variable for the home script contains just ./'() {
+        file('build.gradle') << '''
+            site {
+                root '/root/'
+            }
+        '''
+        newFile('src/main/site/index.groovy') << '''a(href: site.home, 'Home')'''
+        BuildResult build = run TASK
+        def page = file 'build/site/root/index.html'
+        def html = '<a href="./">Home</a>\n'
+        assertEquals(html, page.text);
+    }
+
+    @Test
     void 'site scripts can access the site.indentation variable'() {
         file('build.gradle') << '''
             site {

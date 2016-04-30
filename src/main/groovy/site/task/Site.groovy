@@ -1,6 +1,7 @@
 package site.task
 
 import site.html.HtmlBuilder
+import java.nio.file.Paths
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.file.FileTreeElement
@@ -50,11 +51,18 @@ class Site extends DefaultTask {
         logger.lifecycle " >> $pageAbsolutePath"
     }
 
+    String relativeHomePath(String page, String root) {
+        def home = Paths.get(page).parent.relativize(Paths.get(root)).toString()
+        return (home.empty ? '.' : home) + '/'
+    }
+
     Map bindings(HtmlBuilder builder, String page) {
+        def root = project.site.absoluteRoot()
         def bindings = [
             builder: builder,
-            root: project.site.absoluteRoot(),
+            root: root,
             page: page,
+            home: relativeHomePath(page, root),
             indentation: project.site.indentation
         ]
         bindings << project.site.parameters
