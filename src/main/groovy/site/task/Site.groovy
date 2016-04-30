@@ -37,8 +37,8 @@ class Site extends DefaultTask {
 
     void execute(FileTreeElement script) {
         def pageRelativePath = script.path - '.groovy' + '.html'
-        def pageAbsolutePath = "$project.site.root$pageRelativePath"
-        def page = project.file "$project.site.buildDir/$pageRelativePath"
+        def pageAbsolutePath = project.site.absoluteRoot() + pageRelativePath
+        def page = project.file(project.site.buildDir + pageAbsolutePath)
         page.parentFile.mkdirs()
         page.withWriter { out ->
             def builder = new HtmlBuilder(out, project.site.indentation)
@@ -53,7 +53,7 @@ class Site extends DefaultTask {
     Map bindings(HtmlBuilder builder, String page) {
         def bindings = [
             builder: builder,
-            root: project.site.root,
+            root: project.site.absoluteRoot(),
             page: page,
             indentation: project.site.indentation
         ]

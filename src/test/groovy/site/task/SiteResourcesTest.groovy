@@ -30,6 +30,20 @@ class SiteResourcesTest extends PluginTest {
     }
 
     @Test
+    void 'siteResources copies the site resources under the site root path'() {
+        file('build.gradle') << '''
+            site {
+                root '/root/'
+            }
+        '''
+        def content = 'content'
+        newFile('src/main/resources/resource.txt') << content
+        BuildResult build = run TASK
+        def copiedResource = file 'build/site/root/resource.txt'
+        assertEquals(content, copiedResource.text)
+    }
+
+    @Test
     void 'after files are copied siteResources succeeds'() {
         newFile('src/main/resources/resource.txt')
         assumeFalse(file('build/site/resource.txt').exists())

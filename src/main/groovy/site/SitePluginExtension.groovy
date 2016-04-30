@@ -15,6 +15,11 @@ class SitePluginExtension {
     /** The path where the site will be deployed on the target host, default is {@code /}. */
     String root = '/'
 
+    /** Makes absolute the root path, adding a slash to the left end and the right end of the path if missing. */
+    String absoluteRoot() {
+        (root.startsWith('/') ? '' : '/') + root + (root.startsWith('/') ? '' : '/')
+    }
+
     /** Global parameters shared among all the site's pages. */
     Map parameters = [:]
 

@@ -81,8 +81,22 @@ class SiteTest extends PluginTest {
         '''
         newFile('src/main/site/index.groovy') << '''a(href: site.root, 'Home')'''
         BuildResult build = run TASK
-        def page = file 'build/site/index.html'
+        def page = file 'build/site/root/index.html'
         def html = '<a href="/root/">Home</a>\n'
+        assertEquals(html, page.text);
+    }
+
+    @Test
+    void 'site.root variable is normalized adding slashes if missing'() {
+        file('build.gradle') << '''
+            site {
+                root 'root/path'
+            }
+        '''
+        newFile('src/main/site/subpath/index.groovy') << '''a(href: site.root, 'Home')'''
+        BuildResult build = run TASK
+        def page = file 'build/site/root/path/subpath/index.html'
+        def html = '<a href="/root/path/">Home</a>\n'
         assertEquals(html, page.text);
     }
 
@@ -95,7 +109,7 @@ class SiteTest extends PluginTest {
         '''
         newFile('src/main/site/path/index.groovy') << '''a(href: site.page, 'this page')'''
         BuildResult build = run TASK
-        def page = file 'build/site/path/index.html'
+        def page = file 'build/site/root/path/index.html'
         def html = '<a href="/root/path/index.html">this page</a>\n'
         assertEquals(html, page.text);
     }
