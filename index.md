@@ -25,20 +25,20 @@ With Site Builder you can use an entire programming language to define HTML docu
 
 Copy the following [gradle](http://gradle.org/gradle-download/ "Download gradle") script to a file named `build.gradle`
 
-{% highlight groovy %}
+```gradle
 plugins {
     id 'org.metahelicase.site-builder' version '1.0'
 }
-{% endhighlight %}
+```
 
 then initialize the directory layout of the project by running the task
 
-```
+```shell
 gradle initSite
 ```
 
 Now you can build the generated example page with
 
-```
+```shell
 gradle site
 ```
