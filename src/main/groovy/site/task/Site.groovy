@@ -19,7 +19,10 @@ import org.codehaus.groovy.control.CompilerConfiguration
  * See the {@link site.SitePluginExtension plugin configuration} for how this property can be configured.
  * </li>
  * <li>{@code site.page}: the full path of the page currently being generated.</li>
+ * <li>{@code site.home}: the relative path to the site home location.</li>
+ * <li>{@code site.indentation}: the number of spaces used in each indentation level.</li>
  * </ul>
+ * In the {@code site} block of the build script, custom parameters can be specified, which are collected inside the {@code site} object.
  */
 class Site extends DefaultTask {
 
