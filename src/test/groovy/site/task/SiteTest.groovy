@@ -121,7 +121,7 @@ class SiteTest extends PluginTest {
                 title 'Title'
             }
         '''
-        newFile('src/main/site/path/index.groovy') << '''title "$site.title"'''
+        newFile('src/main/site/path/index.groovy') << '''title site.title'''
         BuildResult build = run TASK
         def page = file 'build/site/path/index.html'
         def html = '<title>Title</title>\n'
@@ -135,9 +135,30 @@ class SiteTest extends PluginTest {
                 title = 'Title'
             }
         '''
-        newFile('src/main/site/path/index.groovy') << '''title "$site.title"'''
+        newFile('src/main/site/path/index.groovy') << '''title site.title'''
         BuildResult build = run TASK
         def page = file 'build/site/path/index.html'
+        def html = '<title>Title</title>\n'
+        assertEquals(html, page.text);
+    }
+
+    @Test
+    void 'site classes can access the site variable from the builder object'() {
+        file('build.gradle') << '''
+            site {
+                title 'Title'
+            }
+        '''
+        newFile('src/main/groovy/Title.groovy') << '''
+            class Title {
+                void call(document) { document.with {
+                    title site.title
+                }}
+            }
+        '''
+        newFile('src/main/site/index.groovy') << '''$ new Title()'''
+        BuildResult build = run TASK
+        def page = file 'build/site/index.html'
         def html = '<title>Title</title>\n'
         assertEquals(html, page.text);
     }

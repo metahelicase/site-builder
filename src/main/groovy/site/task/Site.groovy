@@ -41,13 +41,15 @@ class Site extends DefaultTask {
         page.parentFile.mkdirs()
         page.withWriter { out ->
             def builder = new HtmlBuilder(out, project.site.indentation)
-            def shell = new GroovyShell(bindings(builder, pageAbsolutePath), configuration())
+            builder.metaClass.site = bindings(builder, pageAbsolutePath)
+            def shell = new GroovyShell(configuration())
+            shell.setProperty('site', builder.site)
             shell.evaluate("site.builder.with { ${script.file.text} }")
         }
         logger.lifecycle " >> $pageAbsolutePath"
     }
 
-    Binding bindings(HtmlBuilder builder, String page) {
+    Map bindings(HtmlBuilder builder, String page) {
         def bindings = [
             builder: builder,
             root: project.site.root,
@@ -55,7 +57,7 @@ class Site extends DefaultTask {
             indentation: project.site.indentation
         ]
         bindings << project.site.parameters
-        new Binding([site: bindings])
+        return bindings
     }
 
     CompilerConfiguration configuration() {
