@@ -4,6 +4,7 @@ import site.html.HtmlBuilder
 import java.nio.file.Paths
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.TaskExecutionException
 import org.gradle.api.file.FileTreeElement
 import org.codehaus.groovy.control.CompilerConfiguration
 
@@ -46,7 +47,12 @@ class Site extends DefaultTask {
             builder.metaClass.site = bindings(builder, pageAbsolutePath)
             def shell = new GroovyShell(configuration())
             shell.setProperty('site', builder.site)
-            shell.evaluate("site.builder.with { ${script.file.text} }")
+            try {
+                shell.evaluate("site.builder.with { ${script.file.text} }")
+            } catch (Exception exception) {
+                logger.error("/!\\ $pageAbsolutePath")
+                throw new TaskExecutionException(this, exception)
+            }
         }
         logger.lifecycle " >> $pageAbsolutePath"
     }
