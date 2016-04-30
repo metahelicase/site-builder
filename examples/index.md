@@ -32,7 +32,7 @@ The only required plugin is Site Builder: it already applies the groovy plugin n
 
 ```gradle
 plugins {
-    id 'org.metahelicase.site-builder' version '1.0'
+    id 'org.metahelicase.site-builder' version '1.1'
 }
 ```
 
@@ -353,11 +353,11 @@ When the closure is then called, it has the document builder set as its delegate
 ```groovy
 def twitterHandle = { a(href: 'https://twitter.com/MetaHelicase', '@MetaHelicase') }
 
-_ { _ 'Follow ' $ twitterHandle _ ' on twitter.' }
+_ { _ 'For Site Builder updates, follow ' $ twitterHandle _ ' on twitter.' }
 ```
 
 ```html
-Follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
+For Site Builder updates, follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
 ```
 
 Snippets can be parameterized by defining a closure with parameters.
@@ -366,11 +366,11 @@ However the extension metatag requires a closure, so when invoked the closure mu
 ```groovy
 def twitter = { account -> a(href: "https://twitter.com/$account", "@$account") }
 
-_ { _ 'Follow ' $ { twitter 'MetaHelicase' } _ ' on twitter.' }
+_ { _ 'For Site Builder updates, follow ' $ { twitter 'MetaHelicase' } _ ' on twitter.' }
 ```
 
 ```html
-Follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
+For Site Builder updates, follow <a href="https://twitter.com/MetaHelicase">@MetaHelicase</a> on twitter.
 ```
 
 ### Extending with a class
@@ -428,6 +428,7 @@ The parameters always present in the `site` object are the following:
   - `site.builder`: the DSL delegate,
   - `site.root`: the path under which the pages are located,
   - `site.page`: the full path of the page currently being built,
+  - `site.home`: the relative path to the site home location,
   - `site.indentation`: how many spaces is made of an indentation level in the built HTML.
 
 The example below shows how to use site parameters.
@@ -436,7 +437,7 @@ The example below shows how to use site parameters.
 // build.gradle
 
 plugins {
-    id 'org.metahelicase.site-builder' version '1.0'
+    id 'org.metahelicase.site-builder' version '1.1'
 }
 
 site {
@@ -451,7 +452,7 @@ site {
 // src/main/site/index.groovy
 
 h1 site.title
-a(href: site.root, 'Home')
+a(href: site.home, 'Home')
 p "This is page $site.page"
 footer "Copyright (C) $site.copyrightYear"
 ```
@@ -459,10 +460,10 @@ footer "Copyright (C) $site.copyrightYear"
 The generated page will contain the values of the specified parameters.
 
 ```html
-<!-- build/site/index.html -->
+<!-- build/site/mysite/index.html -->
 
 <h1>My Site</h1>
-<a href="/mysite/">Home</a>
+<a href="./">Home</a>
 <p>This is page /mysite/index.html</p>
 <footer>Copyright (C) 2016</footer>
 ```
