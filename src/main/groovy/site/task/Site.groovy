@@ -7,7 +7,8 @@ import org.gradle.api.file.FileTreeElement
 import org.codehaus.groovy.control.CompilerConfiguration
 
 /**
- * Executes the HTML pages' generation scripts. Every script has access to a context object referenced by the variable called {@code site}.
+ * Executes the HTML pages' generation scripts.
+ * Every script has access to a context object referenced by the variable called {@code site}.
  * The site object has the following fields:
  * <ul>
  * <li>{@code site.builder}: the HTML builder currently in use, that is also the script delegate object.</li>

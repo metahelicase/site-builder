@@ -5,23 +5,17 @@ class HtmlBuilder extends BuilderSupport {
 
     private final TagFormatter formatter
 
-    /**
-     * Constructs a builder that writes HTML to the given writer, indenting tags by the given tab width.
-     */
+    /** Constructs a builder that writes HTML to the given writer, indenting tags by the given tab width. */
     HtmlBuilder(Writer out, int indentation = 4) {
         formatter = TagFormatter.indenting(new PrintWriter(out), indentation)
     }
 
-    /**
-     * Constructs a builder that writes HTML to the given stream, indenting tags by the given tab width.
-     */
+    /** Constructs a builder that writes HTML to the given stream, indenting tags by the given tab width. */
     HtmlBuilder(OutputStream out, int indentation = 4) {
         formatter = TagFormatter.indenting(new PrintWriter(out), indentation)
     }
 
-    /**
-     * Constructs a builder that writes HTML to the standard output, indenting tags by the given tab width.
-     */
+    /** Constructs a builder that writes HTML to the standard output, indenting tags by the given tab width. */
     HtmlBuilder(int indentation = 4) {
         this(System.out, indentation)
     }
@@ -70,9 +64,7 @@ class HtmlBuilder extends BuilderSupport {
         if (parent == null) { formatter.format node }
     }
 
-    /**
-     * Invoked after every node creation, returns this builder so tag declarations can be chained on a single line.
-     */
+    /** Invoked after every node creation, returns this builder so tag declarations can be chained on a single line. */
     HtmlBuilder postNodeCompletion(Object parent, Object node) {
         this
     }
