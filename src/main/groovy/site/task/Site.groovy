@@ -50,11 +50,11 @@ class Site extends DefaultTask {
             try {
                 shell.evaluate("site.builder.with { ${script.file.text} }")
             } catch (Exception exception) {
-                logger.error("/!\\ $pageAbsolutePath")
+                logger.error(" ✘  $pageAbsolutePath")
                 throw new TaskExecutionException(this, exception)
             }
         }
-        logger.lifecycle " >> $pageAbsolutePath"
+        logger.lifecycle " ✔  $pageAbsolutePath"
     }
 
     String relativeHomePath(String page, String root) {
