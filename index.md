@@ -27,7 +27,7 @@ Copy the following [gradle](http://gradle.org/gradle-download/ "Download gradle"
 
 ```gradle
 plugins {
-    id 'org.metahelicase.site-builder' version '1.0'
+    id 'org.metahelicase.site-builder' version '1.1'
 }
 ```
 
